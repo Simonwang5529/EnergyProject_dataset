@@ -1,0 +1,333 @@
+event_id,state_event,Datetime Event Began,Datetime Restoration,Event Type,fips,state,county,start_time,duration,min_customers,max_customers,mean_customers
+Arkansas-0,Arkansas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,5069,Arkansas,Jefferson,2014-11-23 22:45:00,4.0,1210,1255,1213.9375
+California-0,California,2014-11-19 14:44:00,2014-11-19 14:45:00,Suspected Physical Attack - Vandalism,6059,California,Orange,2014-11-19 07:30:00,4.5,204,398,240.88888888888889
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6037,California,Los Angeles,2014-12-11 16:30:00,12.75,326,2227,1240.3921568627452
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6059,California,Orange,2014-12-11 16:00:00,13.25,884,2864,1960.5471698113208
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6065,California,Riverside,2014-12-11 17:00:00,0.75,215,215,215.0
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6065,California,Riverside,2014-12-11 18:00:00,11.25,246,388,295.7333333333333
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6067,California,Sacramento,2014-12-11 11:45:00,4.0,428,18239,2277.4375
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6067,California,Sacramento,2014-12-11 16:00:00,2.5,269,652,470.4
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6067,California,Sacramento,2014-12-11 19:00:00,1.0,213,475,331.75
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6071,California,San Bernardino,2014-12-11 16:30:00,7.0,497,1228,736.1785714285714
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6073,California,San Diego,2014-12-11 07:30:00,3.5,538,544,539.5
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6073,California,San Diego,2014-12-11 16:45:00,3.25,220,501,379.1538461538461
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6073,California,San Diego,2014-12-11 20:15:00,0.75,212,220,214.66666666666663
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6111,California,Ventura,2014-12-11 16:30:00,12.75,573,2837,1218.6274509803925
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6113,California,Yolo,2014-12-11 13:00:00,0.25,270,270,270.0
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6113,California,Yolo,2014-12-11 14:45:00,0.5,281,281,281.0
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6113,California,Yolo,2014-12-11 16:00:00,0.25,355,355,355.0
+California-1,California,2014-12-11 07:21:00,2014-12-11 21:53:00,Distribution Interruption - Unknown Cause,6113,California,Yolo,2014-12-11 17:45:00,0.25,228,228,228.0
+Connecticut-0,Connecticut,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,9001,Connecticut,Fairfield,2014-11-02 11:30:00,23.5,223,4100,1882.234042553192
+Connecticut-0,Connecticut,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,9003,Connecticut,Hartford,2014-11-02 09:45:00,1.5,698,784,712.8333333333334
+Connecticut-0,Connecticut,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,9005,Connecticut,Litchfield,2014-11-02 11:30:00,14.75,208,1984,843.2542372881356
+Connecticut-0,Connecticut,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,9009,Connecticut,New Haven,2014-11-02 07:30:00,1.75,228,2294,1703.428571428571
+Connecticut-1,Connecticut,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,9001,Connecticut,Fairfield,2014-11-26 20:00:00,4.75,445,819,564.7894736842105
+Connecticut-1,Connecticut,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,9001,Connecticut,Fairfield,2014-11-27 02:45:00,0.75,335,341,337.3333333333333
+Connecticut-1,Connecticut,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,9003,Connecticut,Hartford,2014-11-26 18:45:00,14.5,227,2462,1008.6551724137933
+Connecticut-1,Connecticut,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,9003,Connecticut,Hartford,2014-11-27 11:00:00,1.5,783,968,838.8333333333334
+Connecticut-1,Connecticut,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,9005,Connecticut,Litchfield,2014-11-26 18:30:00,31.5,209,2983,1441.5238095238096
+Connecticut-1,Connecticut,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,9011,Connecticut,New London,2014-11-26 19:15:00,0.75,784,784,784.0
+Connecticut-1,Connecticut,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,9011,Connecticut,New London,2014-11-26 21:30:00,2.75,319,1019,442.1818181818182
+Connecticut-1,Connecticut,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,9013,Connecticut,Tolland,2014-11-26 20:45:00,2.0,356,591,492.0
+Connecticut-1,Connecticut,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,9015,Connecticut,Windham,2014-11-26 22:00:00,1.25,243,395,307.4
+Connecticut-1,Connecticut,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,9015,Connecticut,Windham,2014-11-26 23:45:00,2.0,318,345,334.5
+Connecticut-2,Connecticut,2014-12-30 15:50:00,2014-12-31 11:00:00,Suspected Cyber Attack,9001,Connecticut,Fairfield,2014-12-30 18:45:00,2.5,263,751,507.4
+Idaho-0,Idaho,2014-11-21 20:29:00,2014-11-23 00:16:00,Suspected Physical Attack - Vandalism,16049,Idaho,Idaho,2014-11-22 18:15:00,2.5,208,208,208.0
+Louisiana-0,Louisiana,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,22033,Louisiana,East Baton Rouge,2014-11-23 18:00:00,1.75,260,412,357.57142857142856
+Louisiana-0,Louisiana,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,22071,Louisiana,Orleans,2014-11-23 20:45:00,0.75,291,3296,1314.0
+Louisiana-0,Louisiana,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,22115,Louisiana,Vernon,2014-11-23 20:45:00,2.25,1407,1423,1411.5555555555557
+Maine-0,Maine,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,23009,Maine,Hancock,2014-11-02 13:45:00,52.0,892,26541,18158.091346153848
+Maine-0,Maine,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,23011,Maine,Kennebec,2014-11-02 13:15:00,0.75,424,424,424.0
+Maine-0,Maine,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,23015,Maine,Lincoln,2014-11-02 13:00:00,52.75,217,19773,12114.862559241708
+Maine-0,Maine,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,23029,Maine,Washington,2014-11-02 12:45:00,5.25,234,245,234.52380952380952
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23001,Maine,Androscoggin,2014-11-26 21:30:00,43.0,213,2602,1246.3313953488373
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23005,Maine,Cumberland,2014-11-26 20:30:00,70.5,243,28238,9263.070921985816
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23007,Maine,Franklin,2014-11-26 21:45:00,1.5,504,1333,1194.5
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23007,Maine,Franklin,2014-11-27 05:45:00,1.25,317,362,351.4
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23007,Maine,Franklin,2014-11-27 12:15:00,2.75,229,399,313.27272727272725
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23009,Maine,Hancock,2014-11-27 01:15:00,38.5,205,6715,2406.5324675324678
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23011,Maine,Kennebec,2014-11-26 23:00:00,45.0,202,4348,1468.2111111111112
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23013,Maine,Knox,2014-11-26 21:15:00,2.0,459,503,482.375
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23013,Maine,Knox,2014-11-27 01:30:00,35.75,205,1739,776.7972027972028
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23015,Maine,Lincoln,2014-11-26 22:15:00,66.5,219,10979,4868.533834586467
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23017,Maine,Oxford,2014-11-26 21:45:00,25.5,229,2648,1289.0
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23019,Maine,Penobscot,2014-11-26 22:15:00,0.5,207,207,207.0
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23019,Maine,Penobscot,2014-11-27 01:15:00,20.5,291,4731,2515.5853658536585
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23021,Maine,Piscataquis,2014-11-27 01:00:00,0.25,205,205,205.0
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23021,Maine,Piscataquis,2014-11-27 01:30:00,18.25,222,2932,590.1643835616438
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23023,Maine,Sagadahoc,2014-11-26 18:45:00,72.75,233,12811,4003.996563573883
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23027,Maine,Waldo,2014-11-26 23:45:00,20.25,212,3169,1456.2469135802469
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23029,Maine,Washington,2014-11-27 01:15:00,22.75,234,1415,678.7032967032967
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23029,Maine,Washington,2014-11-28 00:45:00,0.25,204,204,204.0
+Maine-1,Maine,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,23031,Maine,York,2014-11-26 20:45:00,70.5,291,42304,14284.017730496456
+Maine-3,Maine,2014-12-30 15:50:00,2014-12-31 11:00:00,Suspected Cyber Attack,23001,Maine,Androscoggin,2014-12-30 21:30:00,2.75,574,574,574.0
+Maine-3,Maine,2014-12-30 15:50:00,2014-12-31 11:00:00,Suspected Cyber Attack,23021,Maine,Piscataquis,2014-12-30 17:15:00,0.25,685,685,685.0
+Massachusetts-0,Massachusetts,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,25003,Massachusetts,Berkshire,2014-11-02 11:45:00,1.75,379,420,401.8571428571428
+Massachusetts-0,Massachusetts,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,25007,Massachusetts,Dukes,2014-11-02 09:30:00,0.75,968,1513,1149.6666666666667
+Massachusetts-0,Massachusetts,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,25007,Massachusetts,Dukes,2014-11-02 12:00:00,0.5,1072,1518,1295.0
+Massachusetts-0,Massachusetts,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,25009,Massachusetts,Essex,2014-11-02 13:15:00,2.75,227,865,690.0909090909091
+Massachusetts-0,Massachusetts,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,25017,Massachusetts,Middlesex,2014-11-02 08:45:00,2.0,492,573,515.375
+Massachusetts-0,Massachusetts,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,25017,Massachusetts,Middlesex,2014-11-02 11:00:00,16.75,220,2134,1055.179104477612
+Massachusetts-0,Massachusetts,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,25021,Massachusetts,Norfolk,2014-11-02 11:45:00,3.75,248,1852,909.2
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25001,Massachusetts,Barnstable,2014-11-26 23:45:00,1.75,225,250,235.42857142857144
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25001,Massachusetts,Barnstable,2014-11-27 02:30:00,1.75,840,846,844.0
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25001,Massachusetts,Barnstable,2014-11-27 16:30:00,1.5,343,344,343.5
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25003,Massachusetts,Berkshire,2014-11-26 18:15:00,55.5,222,15335,4168.923423423424
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25009,Massachusetts,Essex,2014-11-26 21:45:00,7.0,225,769,461.7142857142857
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25009,Massachusetts,Essex,2014-11-27 05:30:00,11.75,264,631,513.7872340425532
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25011,Massachusetts,Franklin,2014-11-26 18:45:00,70.5,233,14345,5074.652482269504
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25013,Massachusetts,Hampden,2014-11-26 18:30:00,30.75,215,1325,635.4471544715448
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25015,Massachusetts,Hampshire,2014-11-26 18:45:00,0.25,264,264,264.0
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25015,Massachusetts,Hampshire,2014-11-26 19:15:00,49.5,207,3632,1235.040404040404
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25017,Massachusetts,Middlesex,2014-11-26 18:30:00,36.25,281,7358,2703.593103448276
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25017,Massachusetts,Middlesex,2014-11-28 07:00:00,5.5,205,794,392.3636363636364
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25021,Massachusetts,Norfolk,2014-11-26 19:45:00,0.5,421,421,421.0
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25021,Massachusetts,Norfolk,2014-11-26 21:00:00,2.0,207,483,300.125
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25021,Massachusetts,Norfolk,2014-11-27 03:45:00,1.5,265,266,265.3333333333333
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25023,Massachusetts,Plymouth,2014-11-26 22:30:00,1.5,774,824,782.5
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25023,Massachusetts,Plymouth,2014-11-27 01:00:00,1.0,241,771,373.5
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25023,Massachusetts,Plymouth,2014-11-27 15:45:00,0.75,279,354,304.0
+Massachusetts-1,Massachusetts,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,25027,Massachusetts,Worcester,2014-11-26 18:00:00,55.75,318,8058,2766.6860986547085
+Massachusetts-2,Massachusetts,2014-12-30 15:50:00,2014-12-31 11:00:00,Suspected Cyber Attack,25001,Massachusetts,Barnstable,2014-12-30 17:00:00,1.0,230,1135,459.25
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26001,Michigan,Alcona,2014-11-25 00:15:00,23.25,208,1702,981.9462365591398
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26001,Michigan,Alcona,2014-11-25 23:45:00,0.75,207,208,207.33333333333331
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26003,Michigan,Alger,2014-11-25 15:15:00,0.5,548,548,548.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26005,Michigan,Allegan,2014-11-25 00:15:00,18.75,206,800,547.84
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26009,Michigan,Antrim,2014-11-25 12:30:00,1.25,239,264,254.2
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26009,Michigan,Antrim,2014-11-25 15:30:00,6.0,218,425,316.1666666666667
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26009,Michigan,Antrim,2014-11-27 10:45:00,2.25,214,331,317.1111111111111
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26011,Michigan,Arenac,2014-11-25 00:15:00,8.75,750,1327,1079.3428571428572
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26011,Michigan,Arenac,2014-11-26 01:45:00,16.0,355,634,376.046875
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26013,Michigan,Baraga,2014-11-24 16:15:00,0.5,307,307,307.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26015,Michigan,Barry,2014-11-25 00:15:00,4.25,304,972,587.8235294117648
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26017,Michigan,Bay,2014-11-25 00:15:00,4.25,587,715,688.4117647058823
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26017,Michigan,Bay,2014-11-25 06:30:00,0.25,569,569,569.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26021,Michigan,Berrien,2014-11-24 14:00:00,2.75,729,774,750.7272727272727
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26021,Michigan,Berrien,2014-11-24 17:00:00,1.5,640,2813,1561.1666666666667
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26021,Michigan,Berrien,2014-11-24 18:45:00,0.75,202,229,220.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26021,Michigan,Berrien,2014-11-24 20:30:00,0.25,231,231,231.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26021,Michigan,Berrien,2014-11-24 21:15:00,0.25,300,300,300.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26021,Michigan,Berrien,2014-11-24 21:45:00,5.0,355,631,454.9
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26023,Michigan,Branch,2014-11-25 00:15:00,23.25,205,595,415.8817204301075
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26023,Michigan,Branch,2014-11-25 23:45:00,1.25,205,225,212.8
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26025,Michigan,Calhoun,2014-11-25 00:15:00,17.25,248,875,616.7101449275362
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26029,Michigan,Charlevoix,2014-11-25 12:15:00,3.0,228,371,284.9166666666667
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26029,Michigan,Charlevoix,2014-11-25 19:00:00,0.5,202,211,206.5
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26037,Michigan,Clinton,2014-11-25 00:15:00,18.0,211,435,321.90277777777777
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26045,Michigan,Eaton,2014-11-25 00:15:00,18.25,212,366,256.3150684931507
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26045,Michigan,Eaton,2014-11-27 05:00:00,3.25,234,524,307.61538461538464
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26045,Michigan,Eaton,2014-11-27 10:15:00,0.25,226,226,226.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26049,Michigan,Genesee,2014-11-25 00:15:00,23.25,274,5961,2084.47311827957
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26049,Michigan,Genesee,2014-11-25 23:45:00,0.5,209,233,221.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26049,Michigan,Genesee,2014-11-26 01:15:00,1.0,398,408,403.5
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26051,Michigan,Gladwin,2014-11-25 00:15:00,13.5,479,2580,2176.740740740741
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26055,Michigan,Grand Traverse,2014-11-25 16:45:00,1.0,229,230,229.75
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26057,Michigan,Gratiot,2014-11-25 00:15:00,8.75,253,303,282.62857142857143
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26059,Michigan,Hillsdale,2014-11-25 00:15:00,23.25,449,2368,1030.8709677419354
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26059,Michigan,Hillsdale,2014-11-25 23:45:00,0.5,273,273,273.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26063,Michigan,Huron,2014-11-25 14:30:00,1.5,203,205,204.16666666666663
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26063,Michigan,Huron,2014-11-25 17:15:00,3.25,209,218,212.69230769230768
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26065,Michigan,Ingham,2014-11-24 18:00:00,1.5,430,907,791.8333333333334
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26065,Michigan,Ingham,2014-11-24 20:30:00,0.25,1060,1060,1060.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26065,Michigan,Ingham,2014-11-24 21:15:00,0.25,1062,1062,1062.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26065,Michigan,Ingham,2014-11-24 21:45:00,25.0,227,1730,634.07
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26067,Michigan,Ionia,2014-11-25 00:15:00,3.25,217,706,558.5384615384615
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26067,Michigan,Ionia,2014-11-27 07:30:00,0.75,329,329,329.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26069,Michigan,Iosco,2014-11-25 00:15:00,3.75,861,1012,987.3333333333334
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26075,Michigan,Jackson,2014-11-25 00:15:00,23.25,308,7348,1405.3870967741937
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26075,Michigan,Jackson,2014-11-25 23:45:00,1.5,276,304,285.1666666666667
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26075,Michigan,Jackson,2014-11-26 18:00:00,0.25,269,269,269.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26077,Michigan,Kalamazoo,2014-11-25 00:15:00,2.5,228,359,303.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26079,Michigan,Kalkaska,2014-11-25 15:45:00,0.5,205,260,232.5
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26081,Michigan,Kent,2014-11-25 00:15:00,17.5,231,1825,564.7571428571429
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26081,Michigan,Kent,2014-11-25 18:15:00,1.75,208,256,239.8571428571429
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26081,Michigan,Kent,2014-11-26 14:30:00,1.0,240,316,296.5
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26085,Michigan,Lake,2014-11-25 17:00:00,0.5,214,214,214.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26085,Michigan,Lake,2014-11-25 18:15:00,1.75,295,367,330.42857142857144
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26087,Michigan,Lapeer,2014-11-24 20:30:00,0.25,210,210,210.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26087,Michigan,Lapeer,2014-11-24 22:00:00,2.25,353,764,552.4444444444445
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26087,Michigan,Lapeer,2014-11-25 00:30:00,1.25,286,680,582.6
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26087,Michigan,Lapeer,2014-11-25 02:00:00,0.75,409,686,517.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26087,Michigan,Lapeer,2014-11-25 03:00:00,7.0,268,860,702.1428571428571
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26087,Michigan,Lapeer,2014-11-25 10:15:00,3.5,295,662,625.0714285714286
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26087,Michigan,Lapeer,2014-11-25 14:00:00,0.25,662,662,662.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26087,Michigan,Lapeer,2014-11-25 14:30:00,2.5,651,678,662.1
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26087,Michigan,Lapeer,2014-11-25 17:15:00,7.75,244,678,460.741935483871
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26091,Michigan,Lenawee,2014-11-25 00:15:00,23.25,564,2158,1367.4086021505375
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26091,Michigan,Lenawee,2014-11-25 23:45:00,5.0,204,428,337.2
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26091,Michigan,Lenawee,2014-11-26 05:15:00,0.5,222,222,222.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26093,Michigan,Livingston,2014-11-24 15:15:00,1.0,347,703,609.25
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26093,Michigan,Livingston,2014-11-24 18:00:00,1.5,312,2256,1668.5
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26093,Michigan,Livingston,2014-11-24 20:30:00,0.25,2629,2629,2629.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26093,Michigan,Livingston,2014-11-24 21:15:00,0.25,3016,3016,3016.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26093,Michigan,Livingston,2014-11-24 21:45:00,19.25,230,3032,1572.844155844156
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26093,Michigan,Livingston,2014-11-25 17:15:00,6.75,269,1396,556.8888888888889
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26093,Michigan,Livingston,2014-11-26 01:00:00,1.5,321,327,323.3333333333333
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26099,Michigan,Macomb,2014-11-24 18:30:00,1.0,318,3913,1533.5
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26099,Michigan,Macomb,2014-11-24 20:30:00,0.25,17663,17663,17663.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26099,Michigan,Macomb,2014-11-24 21:15:00,0.25,21227,21227,21227.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26099,Michigan,Macomb,2014-11-24 21:45:00,2.5,13524,22944,21182.3
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26099,Michigan,Macomb,2014-11-25 00:30:00,2.25,5720,21315,13796.555555555557
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26099,Michigan,Macomb,2014-11-25 03:00:00,7.0,2614,9501,7998.535714285715
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26099,Michigan,Macomb,2014-11-25 10:15:00,3.5,1771,7620,6840.071428571428
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26099,Michigan,Macomb,2014-11-25 14:00:00,0.25,5942,5942,5942.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26099,Michigan,Macomb,2014-11-25 14:30:00,2.5,5591,8333,6788.2
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26099,Michigan,Macomb,2014-11-25 17:15:00,30.25,224,4876,1202.495867768595
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26101,Michigan,Manistee,2014-11-25 12:30:00,2.25,201,276,228.44444444444449
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26101,Michigan,Manistee,2014-11-25 15:45:00,0.5,211,255,233.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26101,Michigan,Manistee,2014-11-25 17:30:00,1.25,201,222,209.8
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26105,Michigan,Mason,2014-11-25 14:30:00,2.75,202,261,254.1818181818182
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26105,Michigan,Mason,2014-11-25 18:45:00,1.0,216,216,216.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26111,Michigan,Midland,2014-11-25 00:15:00,23.25,232,1112,503.4516129032258
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26111,Michigan,Midland,2014-11-25 23:45:00,0.75,226,226,226.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26115,Michigan,Monroe,2014-11-24 17:45:00,1.75,1735,4298,3417.8571428571427
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26115,Michigan,Monroe,2014-11-24 20:30:00,0.25,3214,3214,3214.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26115,Michigan,Monroe,2014-11-24 21:15:00,0.25,3284,3284,3284.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26115,Michigan,Monroe,2014-11-24 21:45:00,49.0,203,5089,1529.2857142857142
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26117,Michigan,Montcalm,2014-11-25 00:15:00,5.75,225,295,257.4782608695652
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26117,Michigan,Montcalm,2014-11-25 23:15:00,0.25,253,253,253.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26117,Michigan,Montcalm,2014-11-25 23:45:00,1.25,253,253,253.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26121,Michigan,Muskegon,2014-11-25 00:15:00,5.75,555,1036,613.4782608695652
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26121,Michigan,Muskegon,2014-11-25 17:00:00,3.25,609,611,609.2307692307693
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26123,Michigan,Newaygo,2014-11-25 12:45:00,3.75,529,582,552.5333333333333
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26125,Michigan,Oakland,2014-11-24 13:15:00,1.75,201,209,206.8571428571429
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26125,Michigan,Oakland,2014-11-24 15:15:00,1.5,215,370,314.5
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26125,Michigan,Oakland,2014-11-24 17:00:00,2.5,324,17986,4663.6
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26125,Michigan,Oakland,2014-11-24 20:30:00,0.25,32837,32837,32837.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26125,Michigan,Oakland,2014-11-24 21:15:00,0.25,32966,32966,32966.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26125,Michigan,Oakland,2014-11-24 21:45:00,12.25,888,37714,22847.081632653066
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26125,Michigan,Oakland,2014-11-25 10:15:00,3.5,4170,14840,12778.785714285714
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26125,Michigan,Oakland,2014-11-25 14:00:00,0.25,14219,14219,14219.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26125,Michigan,Oakland,2014-11-25 14:30:00,2.5,12483,15413,13724.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26125,Michigan,Oakland,2014-11-25 17:15:00,32.75,200,9651,2371.610687022901
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26129,Michigan,Ogemaw,2014-11-25 00:15:00,14.5,238,538,358.3103448275862
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26137,Michigan,Otsego,2014-11-26 16:00:00,1.0,331,429,403.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26139,Michigan,Ottawa,2014-11-25 00:15:00,4.75,469,1100,635.578947368421
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26139,Michigan,Ottawa,2014-11-25 05:30:00,1.5,214,219,217.5
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26139,Michigan,Ottawa,2014-11-25 08:45:00,0.75,209,209,209.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26143,Michigan,Roscommon,2014-11-25 02:00:00,11.0,246,246,246.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26145,Michigan,Saginaw,2014-11-25 00:15:00,23.25,207,2918,1038.774193548387
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-24 20:30:00,0.25,212,212,212.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-24 21:15:00,0.25,249,249,249.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-24 21:45:00,2.5,568,1088,768.8
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-25 00:30:00,2.25,568,1125,1009.1111111111112
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-25 03:00:00,2.75,1119,1280,1222.090909090909
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-25 06:00:00,4.0,1279,1281,1280.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-25 10:15:00,2.75,1278,1291,1282.2727272727273
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-25 13:15:00,0.5,823,3915,2369.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-25 14:00:00,0.25,3914,3914,3914.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-25 14:30:00,2.5,3856,3917,3887.1
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26151,Michigan,Sanilac,2014-11-25 17:15:00,7.75,3135,3856,3290.6774193548385
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26155,Michigan,Shiawassee,2014-11-25 00:15:00,20.25,255,724,335.55555555555554
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26155,Michigan,Shiawassee,2014-11-25 21:00:00,0.75,212,234,226.33333333333331
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-24 15:15:00,0.75,839,841,840.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-24 19:00:00,0.5,321,2117,1219.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-24 20:30:00,0.25,4253,4253,4253.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-24 21:15:00,0.25,3454,3454,3454.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-24 21:45:00,2.5,1961,7758,6321.4
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-25 00:30:00,2.25,3715,9876,7998.333333333333
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-25 03:00:00,7.0,2468,7036,6051.107142857143
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-25 10:15:00,3.5,4078,6250,5908.285714285715
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-25 14:00:00,0.25,6255,6255,6255.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-25 14:30:00,2.5,4189,6279,4952.1
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26147,Michigan,St. Clair,2014-11-25 17:15:00,31.0,285,3944,1261.5645161290322
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26149,Michigan,St. Joseph,2014-11-24 20:30:00,0.25,1605,1605,1605.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26149,Michigan,St. Joseph,2014-11-24 21:15:00,0.25,1614,1614,1614.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26149,Michigan,St. Joseph,2014-11-24 21:45:00,0.5,919,920,919.5
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26149,Michigan,St. Joseph,2014-11-25 00:15:00,15.5,361,520,394.2903225806452
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26149,Michigan,St. Joseph,2014-11-25 22:30:00,0.25,1034,1034,1034.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26157,Michigan,Tuscola,2014-11-24 20:30:00,0.25,1314,1314,1314.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26157,Michigan,Tuscola,2014-11-24 21:15:00,0.25,1408,1408,1408.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26157,Michigan,Tuscola,2014-11-24 21:45:00,1.25,1408,2245,1606.6
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26157,Michigan,Tuscola,2014-11-24 23:15:00,0.75,2245,2245,2245.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26157,Michigan,Tuscola,2014-11-25 00:30:00,2.25,907,2342,1747.5555555555557
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26157,Michigan,Tuscola,2014-11-25 03:00:00,7.0,458,1573,882.3214285714286
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26157,Michigan,Tuscola,2014-11-25 10:15:00,3.5,236,870,804.8571428571429
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26157,Michigan,Tuscola,2014-11-25 14:00:00,0.25,902,902,902.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26157,Michigan,Tuscola,2014-11-25 14:30:00,2.5,703,999,907.9
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26157,Michigan,Tuscola,2014-11-25 17:15:00,8.5,252,721,548.1470588235294
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26159,Michigan,Van Buren,2014-11-25 00:15:00,0.25,1066,1066,1066.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26159,Michigan,Van Buren,2014-11-25 01:30:00,1.0,264,264,264.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26159,Michigan,Van Buren,2014-11-26 22:30:00,0.25,2627,2627,2627.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26161,Michigan,Washtenaw,2014-11-24 17:45:00,1.75,203,15054,8097.571428571428
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26161,Michigan,Washtenaw,2014-11-24 20:30:00,0.25,18724,18724,18724.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26161,Michigan,Washtenaw,2014-11-24 21:15:00,0.25,18890,18890,18890.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26161,Michigan,Washtenaw,2014-11-24 21:45:00,12.25,241,19024,7850.102040816327
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26161,Michigan,Washtenaw,2014-11-25 10:15:00,4.0,221,3548,2975.8125
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26161,Michigan,Washtenaw,2014-11-25 14:30:00,2.5,2791,3697,3390.9
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26161,Michigan,Washtenaw,2014-11-25 17:15:00,23.75,228,2797,744.4315789473684
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26161,Michigan,Washtenaw,2014-11-26 17:30:00,0.25,544,544,544.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-24 15:15:00,1.5,479,524,501.1666666666667
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-24 17:00:00,2.5,261,46283,13517.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-24 20:30:00,0.25,51147,51147,51147.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-24 21:15:00,0.25,54616,54616,54616.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-24 21:45:00,2.5,39326,58642,55499.6
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-25 00:30:00,2.25,46403,55599,49490.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-25 03:00:00,7.0,20963,43468,38323.78571428572
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-25 10:15:00,3.5,19392,35654,32203.35714285714
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-25 14:00:00,0.25,35459,35459,35459.0
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-25 14:30:00,2.5,32885,36105,34366.9
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-25 17:15:00,35.75,1453,31661,8870.944055944055
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-27 05:15:00,6.5,1242,1467,1335.1538461538462
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26163,Michigan,Wayne,2014-11-27 12:00:00,17.5,317,1577,1174.6285714285714
+Michigan-0,Michigan,2014-11-24 12:00:00,2014-11-27 13:00:00,Severe Weather - Wind,26165,Michigan,Wexford,2014-11-25 03:30:00,7.0,258,311,273.3928571428572
+New Hampshire-0,New Hampshire,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,33015,New Hampshire,Rockingham,2014-11-02 11:45:00,1.5,235,419,265.6666666666667
+New Hampshire-0,New Hampshire,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,33019,New Hampshire,Sullivan,2014-11-02 10:15:00,2.25,209,209,209.0
+New Hampshire-1,New Hampshire,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,33001,New Hampshire,Belknap,2014-11-26 21:15:00,48.5,275,13688,8641.113402061856
+New Hampshire-1,New Hampshire,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,33003,New Hampshire,Carroll,2014-11-26 20:15:00,49.5,215,5806,2091.9949494949497
+New Hampshire-1,New Hampshire,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,33005,New Hampshire,Cheshire,2014-11-26 18:15:00,51.5,449,8691,5469.5291262135925
+New Hampshire-1,New Hampshire,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,33007,New Hampshire,Coos,2014-11-27 20:45:00,0.75,852,852,852.0
+New Hampshire-1,New Hampshire,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,33009,New Hampshire,Grafton,2014-11-27 02:00:00,42.25,244,1635,1119.3431952662722
+New Hampshire-1,New Hampshire,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,33013,New Hampshire,Merrimack,2014-11-26 19:45:00,97.0,344,61747,23250.703608247422
+New Hampshire-1,New Hampshire,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,33015,New Hampshire,Rockingham,2014-11-26 18:15:00,0.5,510,510,510.0
+New Hampshire-1,New Hampshire,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,33015,New Hampshire,Rockingham,2014-11-26 19:45:00,50.0,1805,36505,22844.33
+New Hampshire-1,New Hampshire,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,33017,New Hampshire,Strafford,2014-11-26 18:45:00,51.0,596,26902,19035.85784313725
+New Hampshire-2,New Hampshire,2014-12-30 15:50:00,2014-12-31 11:00:00,Suspected Cyber Attack,33011,New Hampshire,Hillsborough,2014-12-30 18:45:00,2.5,436,466,448.0
+Oregon-2,Oregon,2014-11-21 11:26:00,2014-11-23 17:20:00,Suspected Physical Attack - Vandalism,41005,Oregon,Clackamas,2014-11-22 01:45:00,19.75,212,1606,569.379746835443
+Oregon-2,Oregon,2014-11-21 11:26:00,2014-11-23 17:20:00,Suspected Physical Attack - Vandalism,41047,Oregon,Marion,2014-11-22 00:00:00,1.75,213,215,214.14285714285717
+Oregon-2,Oregon,2014-11-21 11:26:00,2014-11-23 17:20:00,Suspected Physical Attack - Vandalism,41051,Oregon,Multnomah,2014-11-21 15:45:00,1.5,220,247,233.66666666666663
+Oregon-2,Oregon,2014-11-21 11:26:00,2014-11-23 17:20:00,Suspected Physical Attack - Vandalism,41051,Oregon,Multnomah,2014-11-21 20:45:00,3.25,320,497,370.9230769230769
+Oregon-2,Oregon,2014-11-21 11:26:00,2014-11-23 17:20:00,Suspected Physical Attack - Vandalism,41051,Oregon,Multnomah,2014-11-22 13:30:00,1.5,216,217,216.83333333333331
+Oregon-2,Oregon,2014-11-21 11:26:00,2014-11-23 17:20:00,Suspected Physical Attack - Vandalism,41051,Oregon,Multnomah,2014-11-22 15:15:00,5.25,370,1814,462.0952380952381
+Oregon-2,Oregon,2014-11-21 11:26:00,2014-11-23 17:20:00,Suspected Physical Attack - Vandalism,41051,Oregon,Multnomah,2014-11-23 09:45:00,1.75,235,235,235.0
+Oregon-2,Oregon,2014-11-21 11:26:00,2014-11-23 17:20:00,Suspected Physical Attack - Vandalism,41067,Oregon,Washington,2014-11-22 11:30:00,2.25,401,432,420.3333333333333
+Oregon-3,Oregon,2014-12-11 16:05:00,2014-12-11 21:00:00,Severe Weather- High Winds,41005,Oregon,Clackamas,2014-12-11 14:45:00,0.75,1160,1160,1160.0
+Rhode Island-0,Rhode Island,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,44003,Rhode Island,Kent,2014-11-02 09:00:00,1.75,869,2368,1298.0
+Rhode Island-0,Rhode Island,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,44005,Rhode Island,Newport,2014-11-02 10:30:00,1.75,459,2697,1911.0
+Rhode Island-0,Rhode Island,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,44009,Rhode Island,Washington,2014-11-02 11:15:00,0.75,2872,2922,2890.0
+Rhode Island-0,Rhode Island,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,44009,Rhode Island,Washington,2014-11-02 13:30:00,0.25,206,206,206.0
+Rhode Island-1,Rhode Island,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,44003,Rhode Island,Kent,2014-11-26 19:45:00,0.25,265,265,265.0
+Rhode Island-1,Rhode Island,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,44007,Rhode Island,Providence,2014-11-26 22:45:00,0.75,440,445,442.3333333333333
+Rhode Island-1,Rhode Island,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,44007,Rhode Island,Providence,2014-11-27 05:30:00,1.5,1307,1308,1307.5
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48029,Texas,Bexar,2014-11-23 20:00:00,1.5,266,341,320.0
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48029,Texas,Bexar,2014-11-23 22:30:00,0.25,307,307,307.0
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48029,Texas,Bexar,2014-11-23 23:45:00,1.25,411,477,460.4
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48085,Texas,Collin,2014-11-23 20:45:00,0.5,1010,1025,1017.5
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48085,Texas,Collin,2014-11-23 21:30:00,0.25,968,968,968.0
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48113,Texas,Dallas,2014-11-23 16:15:00,0.25,1283,1283,1283.0
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48113,Texas,Dallas,2014-11-23 16:45:00,0.5,229,1312,770.5
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48113,Texas,Dallas,2014-11-23 17:30:00,3.75,217,378,289.46666666666664
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48113,Texas,Dallas,2014-11-23 22:45:00,10.5,203,2143,660.3809523809524
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48141,Texas,El Paso,2014-11-23 20:00:00,0.25,221,221,221.0
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48181,Texas,Grayson,2014-11-23 23:00:00,1.0,878,878,878.0
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48201,Texas,Harris,2014-11-23 18:00:00,2.5,232,2440,967.9
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48201,Texas,Harris,2014-11-23 22:45:00,0.5,363,383,373.0
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48439,Texas,Tarrant,2014-11-23 16:30:00,0.75,287,302,294.6666666666667
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48439,Texas,Tarrant,2014-11-23 22:15:00,0.5,231,235,233.0
+Texas-0,Texas,2014-11-24 00:00:00,2014-11-24 00:00:00,Fuel Supply Emergency - Coal,48453,Texas,Travis,2014-11-23 19:00:00,0.25,2938,2938,2938.0
+Vermont-0,Vermont,2014-11-02 13:46:00,2014-11-02 13:46:00,Severe Weather - Winter Storm,50027,Vermont,Windsor,2014-11-02 12:00:00,4.25,263,1358,710.4705882352941
+Vermont-1,Vermont,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,50003,Vermont,Bennington,2014-11-27 00:00:00,0.25,269,269,269.0
+Vermont-1,Vermont,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,50003,Vermont,Bennington,2014-11-27 09:15:00,1.0,244,244,244.0
+Vermont-1,Vermont,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,50021,Vermont,Rutland,2014-11-28 03:30:00,2.75,534,1495,1405.4545454545455
+Vermont-1,Vermont,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,50025,Vermont,Windham,2014-11-26 19:15:00,25.75,227,6285,1950.1456310679607
+Vermont-1,Vermont,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,50025,Vermont,Windham,2014-11-27 23:15:00,0.5,223,224,223.5
+Vermont-1,Vermont,2014-11-26 17:50:00,2014-11-28 07:00:00,Severe Weather - Winter Storm,50027,Vermont,Windsor,2014-11-28 03:30:00,2.5,747,747,747.0
+Vermont-2,Vermont,2014-12-30 15:50:00,2014-12-31 11:00:00,Suspected Cyber Attack,50007,Vermont,Chittenden,2014-12-30 20:30:00,0.5,235,235,235.0
+Washington-0,Washington,2014-11-11 18:00:00,2014-11-14 15:00:00,Severe Weather - Wind,53033,Washington,King,2014-11-11 18:30:00,6.75,433,5797,1604.6296296296296
+Washington-0,Washington,2014-11-11 18:00:00,2014-11-14 15:00:00,Severe Weather - Wind,53033,Washington,King,2014-11-12 07:00:00,1.75,349,349,349.0
+Washington-0,Washington,2014-11-11 18:00:00,2014-11-14 15:00:00,Severe Weather - Wind,53033,Washington,King,2014-11-12 16:15:00,8.75,265,4432,767.1714285714286
+Washington-0,Washington,2014-11-11 18:00:00,2014-11-14 15:00:00,Severe Weather - Wind,53063,Washington,Spokane,2014-11-11 20:00:00,2.25,226,363,261.0
+Washington-0,Washington,2014-11-11 18:00:00,2014-11-14 15:00:00,Severe Weather - Wind,53063,Washington,Spokane,2014-11-11 22:45:00,8.75,210,227,222.74285714285716
+Washington-0,Washington,2014-11-11 18:00:00,2014-11-14 15:00:00,Severe Weather - Wind,53063,Washington,Spokane,2014-11-13 07:45:00,0.5,236,236,236.0
+Washington-0,Washington,2014-11-11 18:00:00,2014-11-14 15:00:00,Severe Weather - Wind,53063,Washington,Spokane,2014-11-13 18:15:00,3.0,226,230,227.33333333333331
+Washington-0,Washington,2014-11-11 18:00:00,2014-11-14 15:00:00,Severe Weather - Wind,53075,Washington,Whitman,2014-11-13 17:30:00,0.25,332,332,332.0

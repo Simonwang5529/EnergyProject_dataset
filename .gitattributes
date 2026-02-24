@@ -1,0 +1,2 @@
+raw_data/Master[[:space:]]CVI[[:space:]]Dataset[[:space:]]-[[:space:]]Oct[[:space:]]2023.xlsx filter=lfs diff=lfs merge=lfs -text
+generated_data/Outage_CVI_Events.csv filter=lfs diff=lfs merge=lfs -text

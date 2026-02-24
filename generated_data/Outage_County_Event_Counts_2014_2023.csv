@@ -1,0 +1,6 @@
+county_fips,county,outage_rows_2014,outage_rows_2015,outage_rows_2016,outage_rows_2017,outage_rows_2018,outage_rows_2019,outage_rows_2020,outage_rows_2021,outage_rows_2022,outage_rows_2023,outage_unique_events_2014,outage_unique_events_2015,outage_unique_events_2016,outage_unique_events_2017,outage_unique_events_2018,outage_unique_events_2019,outage_unique_events_2020,outage_unique_events_2021,outage_unique_events_2022,outage_unique_events_2023,outage_rows_2014_2023,outage_unique_events_2014_2023
+36005,Bronx,6,71,107,64,194,89,118,109,165,111,6,69,76,64,105,78,105,106,155,101,1034,865
+36047,Kings,7,145,149,93,196,126,98,134,208,60,7,142,106,92,107,122,89,126,190,59,1216,1040
+36061,New York,0,76,30,29,0,3,31,47,46,23,0,71,30,29,0,3,21,42,44,22,285,262
+36081,Queens,14,173,153,179,379,206,192,229,353,188,14,172,140,175,216,188,179,218,305,179,2066,1786
+36085,Richmond,4,62,77,58,0,13,76,103,127,73,4,62,73,58,0,13,69,101,113,72,593,565
