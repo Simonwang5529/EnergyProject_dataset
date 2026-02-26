@@ -2,6 +2,13 @@
 
 Dataset repository for the NYC CVI + outage integration work.
 
+## Quick intro
+
+This repo includes raw outage/CVI sources and cleaned outputs.
+The latest severe-weather-only outputs are in `generated_data/`:
+- `SW_Outage.csv`: Severe-weather-related outage records (all available regions/years in the source set).
+- `SW_Outage_NYC.csv`: NYC-only subset of severe-weather-related outage records.
+
 ## Folder structure
 
 - `raw_data/`
@@ -15,6 +22,10 @@ Dataset repository for the NYC CVI + outage integration work.
     - No-event-detail version (one row per tract, yearly and total outage event counts).
   - `Outage_County_Event_Counts_2014_2023.csv`
     - County-level outage event count summary.
+  - `SW_Outage.csv`
+    - Severe-weather-related outage records.
+  - `SW_Outage_NYC.csv`
+    - NYC-only severe-weather-related outage records.
 
 ## Notes
 
