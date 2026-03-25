@@ -1,0 +1,4 @@
+model,formula,nobs,r_squared,adj_r_squared,aic,bic
+count_ols_basic,log_outage_occurrence ~ year_centered + z_severe_weather_count + z_cvi_overall_mean,50,0.2885289000786361,0.24212861095332971,166.9412786525906,174.58937067430318
+count_ols_extended,log_outage_occurrence ~ year_centered + z_severe_weather_count + z_cvi_baseline_social_econ_mean + z_cvi_climate_extreme_events_mean + z_high_cvi_share,50,0.4718566045355159,0.4118403095963701,156.0429302011372,167.51506823370607
+duration_ols_extended,log_outage_duration_mean ~ year_centered + z_severe_weather_share + z_cvi_baseline_social_econ_mean + z_cvi_climate_extreme_events_mean + z_log_outage_mean_customers,47,0.11742020842989942,0.009788526531106623,71.21626224456004,82.31714785482039

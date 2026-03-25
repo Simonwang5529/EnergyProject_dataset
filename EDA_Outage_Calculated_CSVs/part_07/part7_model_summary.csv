@@ -1,0 +1,7 @@
+outcome,model,formula,nobs,r_squared,adj_r_squared,aic,bic
+Occurrence,occ_linear,outage_occurrence ~ year_centered + severe_weather_count + cvi_overall,20993,0.6506093428559409,0.650559403746339,236501.93777780767,236533.7455551189
+Occurrence,occ_interaction,outage_occurrence ~ year_centered + severe_weather_count * cvi_climate_extreme_events + cvi_baseline_social_econ,20993,0.6598104722952487,0.6597294246162796,235945.6816131977,235993.39327916453
+Occurrence,occ_nonlinear,outage_occurrence ~ year_centered + severe_weather_count + cvi_overall + I(cvi_overall ** 2) + severe_weather_count:cvi_overall,20993,0.6844556652542184,0.6843804891130962,234366.9302877802,234414.64195374705
+Log duration,dur_linear,log_outage_duration_mean ~ year_centered + severe_weather_count + cvi_overall,20993,0.016812344732312634,0.016671815742565488,24222.372227829932,24254.18000514115
+Log duration,dur_interaction,log_outage_duration_mean ~ year_centered + severe_weather_count * cvi_climate_extreme_events + cvi_baseline_social_econ,20993,0.02016147713784533,0.019928037741346882,24154.739556202185,24202.45122216901
+Log duration,dur_nonlinear,log_outage_duration_mean ~ year_centered + severe_weather_count + cvi_overall + I(cvi_overall ** 2) + severe_weather_count:cvi_overall,20993,0.019896736311557306,0.019663233842483918,24160.410851378612,24208.122517345437

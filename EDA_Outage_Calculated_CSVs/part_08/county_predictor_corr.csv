@@ -1,0 +1,7 @@
+index,cvi_overall_mean,cvi_overall_p75,cvi_baseline_social_econ_mean,cvi_climate_all_mean,cvi_climate_extreme_events_mean,high_cvi_share
+cvi_overall_mean,1.0,0.981,0.902,-0.173,-0.269,0.894
+cvi_overall_p75,0.981,1.0,0.936,-0.312,-0.336,0.959
+cvi_baseline_social_econ_mean,0.902,0.936,1.0,-0.571,-0.614,0.898
+cvi_climate_all_mean,-0.173,-0.312,-0.571,1.0,0.883,-0.407
+cvi_climate_extreme_events_mean,-0.269,-0.336,-0.614,0.883,1.0,-0.295
+high_cvi_share,0.894,0.959,0.898,-0.407,-0.295,1.0

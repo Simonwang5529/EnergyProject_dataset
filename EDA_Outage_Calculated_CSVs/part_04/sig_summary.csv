@@ -1,0 +1,6 @@
+analysis,significant_count,total_tested,sig_rate
+SW vs Occurrence (tract),1008,2168,0.46494464944649444
+SW vs Duration (tract),0,2168,0.0
+Trend in Occurrence (tract),0,2168,0.0
+Trend in Duration (tract),0,2168,0.0
+Month Effect by Year,10,10,1.0
