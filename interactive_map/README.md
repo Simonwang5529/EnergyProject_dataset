@@ -2,6 +2,10 @@
 
 This folder turns the existing `NYC_Outage_Themes.gpkg` file into a browser-ready interactive map for the updated spatial tasks.
 
+## Deployed website
+
+https://simonwang5529.github.io/EnergyProject_dataset/
+
 ## What it builds
 
 - `output/nyc_outage_updated_layers.html`
