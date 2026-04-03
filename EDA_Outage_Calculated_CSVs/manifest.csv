@@ -5,10 +5,13 @@ part_01,tract_lr.csv
 part_02,tract_trend.csv
 part_02,occ_trend_counts.csv
 part_02,dur_trend_counts.csv
+part_02,occ_trend_counts_01.csv
+part_02,dur_trend_counts_01.csv
 part_03,monthly_counts.csv
 part_03,year_month_test.csv
 part_03,month_detail.csv
 part_03,sig_months.csv
+part_03,sig_months_01.csv
 part_04,tract_sw.csv
 part_04,sig_summary.csv
 part_04,annual_total.csv
