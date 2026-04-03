@@ -91,9 +91,7 @@ These results are not stored as two columns in one CSV. They are exported as sep
 
 ## 3. Short conclusion
 
-The 99% significance level was not added only for duration trend and occurrence trend.
-
-It now also appears in:
+It appears in:
 
 - regression significance outputs
 - tract trend significance outputs
