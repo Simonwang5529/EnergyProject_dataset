@@ -525,6 +525,24 @@ def make_geometry_payload(records: list[dict[str, Any]]) -> list[dict[str, Any]]
     return payload
 
 
+def make_geojson_payload(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Return a GeoJSON FeatureCollection with original WGS-84 coordinates."""
+    features = []
+    for record in records:
+        features.append(
+            {
+                "type": "Feature",
+                "properties": {
+                    "id": record["id"],
+                    "label": record["label"],
+                    "countyName": record["county_name"],
+                },
+                "geometry": record["geometry"],
+            }
+        )
+    return {"type": "FeatureCollection", "features": features}
+
+
 def load_font(size: int, bold: bool = False) -> ImageFont.ImageFont:
     font_candidates = [
         "/System/Library/Fonts/Supplemental/Arial Bold.ttf" if bold else "/System/Library/Fonts/Supplemental/Arial.ttf",

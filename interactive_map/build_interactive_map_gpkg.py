@@ -390,7 +390,7 @@ def build_sw_significance_layer(connection: sqlite3.Connection) -> dict[str, Any
 
     variant_meta = {
         "both": {
-            "label": "95% + 99%",
+            "label": "95% & 99%",
             "color_map": {
                 "99% significant": "#8c2d04",
                 "95% significant only": "#ec7014",
@@ -530,13 +530,13 @@ def write_html(
     tract_geometry: list[dict[str, Any]],
     county_geometry: list[dict[str, Any]],
     layers: list[dict[str, Any]],
-    map_width: int,
-    map_height: int,
+    _map_width: int,
+    _map_height: int,
     output_path: Path,
 ) -> None:
     geometry_payload = {
-        "tracts": base.make_geometry_payload(tract_geometry),
-        "counties": base.make_geometry_payload(county_geometry),
+        "tracts": base.make_geojson_payload(tract_geometry),
+        "counties": base.make_geojson_payload(county_geometry),
     }
 
     html = f"""<!DOCTYPE html>
@@ -545,6 +545,7 @@ def write_html(
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NYC Outage Themes Interactive Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     :root {{
       --paper: #f6f2ea;
@@ -601,42 +602,23 @@ def write_html(
       line-height: 1.5;
       font-size: 0.98rem;
     }}
-    .layer-buttons {{
-      display: grid;
-      gap: 10px;
-    }}
-    .layer-button {{
-      width: 100%;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.06);
-      color: #fdf8f1;
-      text-align: left;
-      padding: 14px 16px;
+    .layer-select {{
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fffdfa;
+      color: var(--ink);
+      padding: 10px 36px 10px 14px;
+      font: inherit;
+      font-size: 0.94rem;
       cursor: pointer;
-      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235f6c72' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
     }}
-    .layer-button:hover {{
-      transform: translateY(-1px);
-      border-color: rgba(255, 255, 255, 0.28);
-    }}
-    .layer-button.active {{
-      background: rgba(243, 200, 155, 0.16);
-      border-color: rgba(243, 200, 155, 0.8);
-    }}
-    .layer-part {{
-      display: block;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #f3c89b;
-      margin-bottom: 4px;
-    }}
-    .layer-title {{
-      display: block;
-      font-weight: 700;
-      font-size: 0.96rem;
-      line-height: 1.3;
+    .layer-select:focus {{
+      outline: none;
+      border-color: var(--accent);
     }}
     .card {{
       background: rgba(255, 255, 255, 0.07);
@@ -680,7 +662,7 @@ def write_html(
       border: 1px solid rgba(255, 255, 255, 0.22);
       flex: 0 0 auto;
     }}
-    .legend-note {{
+    .card p.legend-note {{
       margin-top: 14px;
       color: #d4e0e4;
       line-height: 1.45;
@@ -702,6 +684,7 @@ def write_html(
       gap: 16px;
       align-items: flex-start;
       flex-wrap: wrap;
+      flex-shrink: 0;
     }}
     .map-toolbar h2 {{
       margin: 0;
@@ -750,35 +733,29 @@ def write_html(
       font: inherit;
       padding-right: 6px;
     }}
+    .map-summary {{
+      margin: 0;
+      padding: 10px 14px;
+      background: rgba(220, 109, 50, 0.07);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      flex-shrink: 0;
+    }}
     .map-frame {{
       position: relative;
       border-radius: 24px;
-      overflow: hidden;
-      background:
-        linear-gradient(180deg, rgba(237, 233, 222, 0.95) 0%, rgba(245, 241, 232, 0.98) 100%);
       border: 1px solid #e4dccd;
-      min-height: 72vh;
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
     }}
-    svg {{
+    #map {{
       width: 100%;
-      height: auto;
-      display: block;
-    }}
-    .feature {{
-      cursor: pointer;
-      transition: opacity 120ms ease, stroke-width 120ms ease;
-      fill-rule: evenodd;
-    }}
-    .feature:hover {{
-      opacity: 0.84;
-    }}
-    .tract-feature {{
-      stroke: rgba(34, 46, 51, 0.52);
-      stroke-width: 0.42;
-    }}
-    .county-feature {{
-      stroke: rgba(18, 29, 34, 0.85);
-      stroke-width: 1.35;
+      height: 100%;
+      border-radius: 24px;
     }}
     .tooltip {{
       position: absolute;
@@ -794,14 +771,19 @@ def write_html(
       opacity: 0;
       transform: translate(14px, 14px);
       transition: opacity 120ms ease;
+      z-index: 1001;
     }}
     .footer-note {{
       color: var(--muted);
       font-size: 0.94rem;
       line-height: 1.45;
+      flex-shrink: 0;
+    }}
+    .leaflet-control-zoom a {{
+      border-radius: 10px !important;
     }}
     @media (max-width: 1120px) {{
-      .shell {{ grid-template-columns: 1fr; }}
+      .shell {{ grid-template-columns: 1fr; height: auto; }}
       .map-frame {{ min-height: 58vh; }}
     }}
   </style>
@@ -812,19 +794,14 @@ def write_html(
       <div>
         <div class="eyebrow">Presentation Build</div>
         <h1>NYC Outage Themes</h1>
-        <p class="lede">Interactive map built directly from <code>NYC_Outage_Themes.gpkg</code>. Use the layer buttons to move across the part 04 to part 10 views, hover for details, and click a tract or county to zoom in.</p>
+        <p class="lede">Interactive map built directly from <code>NYC_Outage_Themes.gpkg</code>. Use the layer buttons to switch views, hover for details, and click a tract or county to zoom in.</p>
       </div>
-      <div class="layer-buttons" id="layerButtons"></div>
       <section class="card">
         <h2 id="infoTitle"></h2>
         <p id="infoDescription"></p>
         <div class="legend-title" id="legendTitle"></div>
         <div class="legend" id="legend"></div>
         <p class="legend-note" id="legendNote"></p>
-      </section>
-      <section class="card">
-        <h2>Summary</h2>
-        <p id="infoSummary"></p>
       </section>
     </aside>
     <main class="map-card">
@@ -835,6 +812,7 @@ def write_html(
           <p id="mapDescription"></p>
         </div>
         <div class="toolbar-actions">
+          <select class="layer-select" id="layerSelect" aria-label="Select map layer"></select>
           <label class="variant-control" id="variantControl">
             <span>Significance</span>
             <select id="variantSelect" aria-label="Select significance level"></select>
@@ -842,11 +820,9 @@ def write_html(
           <button type="button" id="resetView">Reset view</button>
         </div>
       </div>
+      <p class="map-summary" id="mapSummary"></p>
       <div class="map-frame">
-        <svg id="mapSvg" viewBox="0 0 {map_width} {map_height}" aria-label="Interactive NYC outage map">
-          <g id="tractGroup"></g>
-          <g id="countyGroup"></g>
-        </svg>
+        <div id="map"></div>
         <div class="tooltip" id="tooltip"></div>
       </div>
       <div class="footer-note">
@@ -854,62 +830,93 @@ def write_html(
       </div>
     </main>
   </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     const GEOMETRY = {json.dumps(geometry_payload, separators=(",", ":"))};
     const LAYERS = {json.dumps(layers, separators=(",", ":"))};
 
-    const svg = document.getElementById("mapSvg");
-    const tractGroup = document.getElementById("tractGroup");
-    const countyGroup = document.getElementById("countyGroup");
-    const tooltip = document.getElementById("tooltip");
-    const layerButtons = document.getElementById("layerButtons");
-    const legend = document.getElementById("legend");
-    const legendTitle = document.getElementById("legendTitle");
-    const legendNote = document.getElementById("legendNote");
-    const variantControl = document.getElementById("variantControl");
-    const variantSelect = document.getElementById("variantSelect");
-    const infoTitle = document.getElementById("infoTitle");
-    const infoDescription = document.getElementById("infoDescription");
-    const infoSummary = document.getElementById("infoSummary");
-    const mapPart = document.getElementById("mapPart");
-    const mapTitle = document.getElementById("mapTitle");
-    const mapDescription = document.getElementById("mapDescription");
-    const defaultViewBox = [0, 0, {map_width}, {map_height}];
-    let currentLayer = null;
+    const map = L.map("map", {{ minZoom: 10 }});
+    L.tileLayer("https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png", {{
+      attribution: "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+      maxZoom: 19,
+    }}).addTo(map);
 
-    function createPaths(groupName, target, items, className) {{
-      items.forEach((item) => {{
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", item.path);
-        path.setAttribute("class", `feature ${{className}}`);
-        path.dataset.featureId = item.id;
-        path.dataset.tooltip = "";
-        path.style.fill = "#d9d2c3";
-        path.addEventListener("mousemove", (event) => {{
-          if (!path.dataset.tooltip) return;
-          tooltip.innerHTML = path.dataset.tooltip;
-          tooltip.style.opacity = "1";
-          tooltip.style.left = `${{event.offsetX + 18}}px`;
-          tooltip.style.top = `${{event.offsetY + 18}}px`;
-        }});
-        path.addEventListener("mouseleave", () => {{
-          tooltip.style.opacity = "0";
-        }});
-        path.addEventListener("click", () => zoomToBBox(item.bbox));
-        target.appendChild(path);
+    const tooltip = document.getElementById("tooltip");
+    const featureToLayer = {{}};
+    let currentLayer = null;
+    let hoveredLayer = null;
+
+    function darkenHex(hex, factor) {{
+      const h = (hex || "#d9d2c3").replace(/^#/, "");
+      if (h.length !== 6) return hex;
+      const r = Math.round(parseInt(h.slice(0, 2), 16) * factor);
+      const g = Math.round(parseInt(h.slice(2, 4), 16) * factor);
+      const b = Math.round(parseInt(h.slice(4, 6), 16) * factor);
+      return "rgb(" + r + "," + g + "," + b + ")";
+    }}
+
+    function setupFeatureEvents(feature, layer) {{
+      const id = feature.properties.id;
+      featureToLayer[id] = layer;
+      layer._tooltip_html = "";
+      layer._original_fill = "#d9d2c3";
+      layer.on("mouseover", () => {{
+        if (hoveredLayer && hoveredLayer !== layer) {{
+          hoveredLayer.setStyle({{ fillColor: hoveredLayer._original_fill, fillOpacity: 0.75 }});
+        }}
+        hoveredLayer = layer;
+        const isCvi = currentLayer && currentLayer.id === "part07_cvi";
+        const hoverFill = isCvi ? "#000000" : darkenHex(layer._original_fill, 0.70);
+        layer.setStyle({{ fillColor: hoverFill, fillOpacity: 0.95 }});
+        layer.bringToFront();
+      }});
+      layer.on("mousemove", (e) => {{
+        if (!layer._tooltip_html) return;
+        tooltip.innerHTML = layer._tooltip_html;
+        tooltip.style.opacity = "1";
+        tooltip.style.left = (e.containerPoint.x + 18) + "px";
+        tooltip.style.top = (e.containerPoint.y + 18) + "px";
+      }});
+      layer.on("mouseout", () => {{
+        layer.setStyle({{ fillColor: layer._original_fill, fillOpacity: 0.75 }});
+        if (hoveredLayer === layer) hoveredLayer = null;
+        tooltip.style.opacity = "0";
+      }});
+      layer.on("click", (e) => {{ map.fitBounds(e.target.getBounds(), {{ padding: [20, 20] }}); }});
+    }}
+
+    const tractGeoLayer = L.geoJSON(GEOMETRY.tracts, {{
+      style: () => ({{ fillColor: "#d9d2c3", fillOpacity: 0.75, color: "rgba(34,46,51,0.52)", weight: 0.42 }}),
+      onEachFeature: setupFeatureEvents,
+    }});
+    const countyGeoLayer = L.geoJSON(GEOMETRY.counties, {{
+      style: () => ({{ fillColor: "#d9d2c3", fillOpacity: 0.75, color: "rgba(18,29,34,0.85)", weight: 1.35 }}),
+      onEachFeature: setupFeatureEvents,
+    }});
+
+    tractGeoLayer.addTo(map);
+    map.setView([40.655, -73.94], 10);
+
+    function applyStyles(group, styles) {{
+      const geoLayer = group === "tracts" ? tractGeoLayer : countyGeoLayer;
+      geoLayer.eachLayer((l) => {{
+        const id = l.feature.properties.id;
+        const style = styles[id] || {{}};
+        const fill = style.fill || "#d9d2c3";
+        l.setStyle({{ fillColor: fill }});
+        l._original_fill = fill;
+        l._tooltip_html = style.tooltip || "";
       }});
     }}
 
-    function zoomToBBox(bbox) {{
-      const [x, y, width, height] = bbox;
-      const pad = 18;
-      const safeWidth = Math.max(width, 18);
-      const safeHeight = Math.max(height, 18);
-      svg.setAttribute("viewBox", `${{x - pad}} ${{y - pad}} ${{safeWidth + pad * 2}} ${{safeHeight + pad * 2}}`);
-    }}
-
-    function resetView() {{
-      svg.setAttribute("viewBox", defaultViewBox.join(" "));
+    function toggleGroups(group) {{
+      if (group === "tracts") {{
+        if (!map.hasLayer(tractGeoLayer)) map.addLayer(tractGeoLayer);
+        if (map.hasLayer(countyGeoLayer)) map.removeLayer(countyGeoLayer);
+      }} else {{
+        if (!map.hasLayer(countyGeoLayer)) map.addLayer(countyGeoLayer);
+        if (map.hasLayer(tractGeoLayer)) map.removeLayer(tractGeoLayer);
+      }}
     }}
 
     function getActiveLayerView(layer) {{
@@ -955,24 +962,6 @@ def write_html(
       legendNote.style.display = layer.legendNote ? "block" : "none";
     }}
 
-    function applyStyles(groupName, styles) {{
-      const selector = groupName === "tracts" ? ".tract-feature" : ".county-feature";
-      document.querySelectorAll(selector).forEach((path) => {{
-        const featureId = path.dataset.featureId;
-        const style = styles[featureId] || {{}};
-        path.style.fill = style.fill || "#d9d2c3";
-        path.dataset.tooltip = style.tooltip || "";
-      }});
-    }}
-
-    function toggleGroups(groupName) {{
-      const tractVisible = groupName === "tracts";
-      tractGroup.style.display = tractVisible ? "block" : "none";
-      countyGroup.style.display = tractVisible ? "none" : "block";
-      tractGroup.style.pointerEvents = tractVisible ? "auto" : "none";
-      countyGroup.style.pointerEvents = tractVisible ? "none" : "auto";
-    }}
-
     function renderCurrentLayer() {{
       if (!currentLayer) return;
       const layer = getActiveLayerView(currentLayer);
@@ -982,22 +971,18 @@ def write_html(
       updateLegendMeta(layer);
       infoTitle.textContent = currentLayer.title;
       infoDescription.textContent = layer.description || currentLayer.description;
-      infoSummary.textContent = layer.summary || currentLayer.summary;
       mapPart.textContent = currentLayer.part;
       mapTitle.textContent = currentLayer.title;
       mapDescription.textContent = layer.description || currentLayer.description;
-      resetView();
+      mapSummary.textContent = layer.summary || currentLayer.summary || "";
     }}
 
-    function buildButtons() {{
+    function buildSelect() {{
       LAYERS.forEach((layer) => {{
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "layer-button";
-        button.dataset.layerId = layer.id;
-        button.innerHTML = `<span class="layer-part">${{layer.part}}</span><span class="layer-title">${{layer.title}}</span>`;
-        button.addEventListener("click", () => setLayer(layer.id));
-        layerButtons.appendChild(button);
+        const option = document.createElement("option");
+        option.value = layer.id;
+        option.textContent = `${{layer.part}}: ${{layer.title}}`;
+        layerSelect.appendChild(option);
       }});
     }}
 
@@ -1005,19 +990,30 @@ def write_html(
       const layer = LAYERS.find((candidate) => candidate.id === layerId);
       if (!layer) return;
       currentLayer = layer;
-      document.querySelectorAll(".layer-button").forEach((button) => {{
-        button.classList.toggle("active", button.dataset.layerId === layerId);
-      }});
+      layerSelect.value = layerId;
       updateVariantControl(layer);
       renderCurrentLayer();
     }}
 
-    createPaths("tracts", tractGroup, GEOMETRY.tracts, "tract-feature");
-    createPaths("counties", countyGroup, GEOMETRY.counties, "county-feature");
-    buildButtons();
+    const layerSelect = document.getElementById("layerSelect");
+    const legend = document.getElementById("legend");
+    const legendTitle = document.getElementById("legendTitle");
+    const legendNote = document.getElementById("legendNote");
+    const variantControl = document.getElementById("variantControl");
+    const variantSelect = document.getElementById("variantSelect");
+    const infoTitle = document.getElementById("infoTitle");
+    const infoDescription = document.getElementById("infoDescription");
+    const mapPart = document.getElementById("mapPart");
+    const mapTitle = document.getElementById("mapTitle");
+    const mapDescription = document.getElementById("mapDescription");
+    const mapSummary = document.getElementById("mapSummary");
+
+    buildSelect();
+    layerSelect.addEventListener("change", () => setLayer(layerSelect.value));
     variantSelect.addEventListener("change", renderCurrentLayer);
-    document.getElementById("resetView").addEventListener("click", resetView);
-    svg.addEventListener("dblclick", resetView);
+    document.getElementById("resetView").addEventListener("click", () => {{
+      map.setView([40.655, -73.94], 10);
+    }});
     setLayer((LAYERS.find((layer) => layer.id === "part06_clusters") || LAYERS[0]).id);
   </script>
 </body>

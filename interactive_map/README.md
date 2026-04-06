@@ -30,4 +30,9 @@ Run:
 python3 interactive_map/build_interactive_map.py
 ```
 
+Alternatively, run:
 
+```bash
+.venv/bin/python3 interactive_map/build_interactive_map_gpkg.py --skip-sync
+.venv/bin/python3 -m http.server 8000
+```
