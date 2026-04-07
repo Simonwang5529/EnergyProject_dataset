@@ -17,6 +17,7 @@ PROJECT_DIR = Path(__file__).resolve().parent
 ROOT = PROJECT_DIR.parents[0]
 DEFAULT_GPKG_PATH = ROOT / "NYC_Outage_Themes.gpkg"
 DEFAULT_SIG_CSV_PATH = ROOT / "EDA_Outage_Calculated_CSVs" / "part_04" / "tract_sw.csv"
+DEFAULT_ANNUAL_CSV_PATH = ROOT / "EDA_Outage_Calculated_CSVs" / "part_00_foundation" / "annual_panel.csv"
 DEFAULT_HTML_PATH = ROOT / "nyc_outage_updated_layers.html"
 DEFAULT_DOCS_INDEX_PATH = ROOT / "docs" / "index.html"
 DEFAULT_COUNTY_PNG_PATH = ROOT / "part_08_county_vulnerability_concentration.png"
@@ -84,6 +85,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Build from the GeoPackage as-is without writing CSV significance columns into it first.",
     )
+    parser.add_argument(
+        "--annual-csv",
+        type=Path,
+        default=DEFAULT_ANNUAL_CSV_PATH,
+        help="Annual panel CSV for the Part 00 temporal choropleth.",
+    )
     return parser.parse_args()
 
 
@@ -98,6 +105,11 @@ def load_spatialite(connection: sqlite3.Connection) -> None:
 
 
 def load_significance_rows(csv_path: Path) -> list[dict[str, str]]:
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def load_annual_rows(csv_path: Path) -> list[dict[str, str]]:
     with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
         return list(csv.DictReader(handle))
 
@@ -176,6 +188,13 @@ def add_legend_meta(layer: dict[str, Any], title: str, note: str) -> dict[str, A
     return layer
 
 
+def add_button_meta(layer: dict[str, Any], short_title: str, short_part: str | None = None) -> dict[str, Any]:
+    layer["buttonTitle"] = short_title
+    if short_part:
+        layer["buttonPart"] = short_part
+    return layer
+
+
 def build_cluster_layer(connection: sqlite3.Connection) -> dict[str, Any]:
     rows = connection.execute(
         """
@@ -219,23 +238,27 @@ def build_cluster_layer(connection: sqlite3.Connection) -> dict[str, Any]:
         f"{counts.get('Cluster 0', 0) + counts.get('Cluster 1', 0) + counts.get('Cluster 2', 0) + counts.get('Cluster 3', 0)} "
         f"tracts are assigned to four seasonality clusters, with {counts.get('No cluster', 0)} tracts left unclassified. To be clear, the boroughs ended up cleanly organizing into different clusters."
     )
-    return add_legend_meta(
-        {
-            "id": "part06_clusters",
-            "part": "Part 06",
-            "title": "Tract Outage Seasonality Clusters",
-            "description": "Categorical cluster map showing where outage seasonality patterns differ across NYC tracts.",
-            "summary": summary,
-            "group": "tracts",
-            "legend": base.discrete_legend(
-                counts,
-                color_map,
-                ["Cluster 0", "Cluster 1", "Cluster 2", "Cluster 3", "No cluster"],
-            ),
-            "styles": styles,
-        },
-        "Seasonality categories",
-        "Counts in parentheses show how many tracts fall in each cluster.",
+    return add_button_meta(
+        add_legend_meta(
+            {
+                "id": "part06_clusters",
+                "part": "Part 06",
+                "title": "Tract Outage Seasonality Clusters",
+                "description": "Categorical cluster map showing where outage seasonality patterns differ across NYC tracts.",
+                "summary": summary,
+                "group": "tracts",
+                "legend": base.discrete_legend(
+                    counts,
+                    color_map,
+                    ["Cluster 0", "Cluster 1", "Cluster 2", "Cluster 3", "No cluster"],
+                ),
+                "styles": styles,
+            },
+            "Seasonality categories",
+            "Counts in parentheses show how many tracts fall in each cluster.",
+        ),
+        "Seasonality Clusters",
+        "P06",
     )
 
 
@@ -288,19 +311,23 @@ def build_cvi_layer(connection: sqlite3.Connection) -> dict[str, Any]:
         }
         for index in range(len(edges) - 1)
     ]
-    return add_legend_meta(
-        {
-            "id": "part07_cvi",
-            "part": "Part 07",
-            "title": "Overall Climate Vulnerability Index",
-            "description": "Tract-level choropleth for the overall CVI score, highlighting the structural vulnerability landscape.",
-            "summary": f"Overall CVI ranges from {min(values):.3f} to {max(values):.3f} across {len(rows):,} tracts. While there are certainly some areas that are particularly vulnerable, and others that are much less, CVI seems to be almost evenly distributed across the city.",
-            "group": "tracts",
-            "legend": legend,
-            "styles": styles,
-        },
-        "Equal-interval CVI bins",
-        "Each swatch shows a score range; counts in parentheses show how many tracts land in that range.",
+    return add_button_meta(
+        add_legend_meta(
+            {
+                "id": "part07_cvi",
+                "part": "Part 07",
+                "title": "Overall Climate Vulnerability Index",
+                "description": "Tract-level choropleth for the overall CVI score, highlighting the structural vulnerability landscape.",
+                "summary": f"Overall CVI ranges from {min(values):.3f} to {max(values):.3f} across {len(rows):,} tracts. While there are certainly some areas that are particularly vulnerable, and others that are much less, CVI seems to be almost evenly distributed across the city.",
+                "group": "tracts",
+                "legend": legend,
+                "styles": styles,
+            },
+            "Equal-interval CVI bins",
+            "Each swatch shows a score range; counts in parentheses show how many tracts land in that range.",
+        ),
+        "Overall CVI",
+        "P07",
     )
 
 
@@ -351,19 +378,23 @@ def build_priority_layer(connection: sqlite3.Connection) -> dict[str, Any]:
             ),
         }
 
-    return add_legend_meta(
-        {
-            "id": "part07_priority",
-            "part": "Part 07",
-            "title": "Priority Overlap: Vulnerability + Outage Burden",
-            "description": "Rule-based priority map highlighting tracts where high vulnerability overlaps with elevated outage burden.",
-            "summary": f"{counts.get('Priority tract', 0)} tracts are flagged as overlap priorities where vulnerability and outage burden are jointly elevated. These areas would require the most attention going forward.",
-            "group": "tracts",
-            "legend": base.discrete_legend(counts, color_map, ["Priority tract", "Not flagged", "No data"]),
-            "styles": styles,
-        },
-        "Priority status",
-        "Priority tracts are the overlap areas where vulnerability and outage burden are both elevated.",
+    return add_button_meta(
+        add_legend_meta(
+            {
+                "id": "part07_priority",
+                "part": "Part 07",
+                "title": "Priority Overlap: Vulnerability + Outage Burden",
+                "description": "Rule-based priority map highlighting tracts where high vulnerability overlaps with elevated outage burden.",
+                "summary": f"{counts.get('Priority tract', 0)} tracts are flagged as overlap priorities where vulnerability and outage burden are jointly elevated. These areas would require the most attention going forward.",
+                "group": "tracts",
+                "legend": base.discrete_legend(counts, color_map, ["Priority tract", "Not flagged", "No data"]),
+                "styles": styles,
+            },
+            "Priority status",
+            "Priority tracts are the overlap areas where vulnerability and outage burden are both elevated.",
+        ),
+        "Priority Overlap",
+        "P07",
     )
 
 
@@ -494,36 +525,129 @@ def build_sw_significance_layer(connection: sqlite3.Connection) -> dict[str, Any
             "styles": variant_styles[variant_id],
         }
 
-    return {
-        "id": "part04_sw_significance",
-        "part": "Part 04",
-        "title": "Severe Weather Association Significance",
-        "description": variants["both"]["description"],
-        "summary": variants["both"]["summary"],
-        "group": "tracts",
-        "legend": variants["both"]["legend"],
-        "legendTitle": variants["both"]["legendTitle"],
-        "legendNote": variants["both"]["legendNote"],
-        "styles": variants["both"]["styles"],
-        "defaultVariant": "both",
-        "variants": variants,
-    }
+    return add_button_meta(
+        {
+            "id": "part04_sw_significance",
+            "part": "Part 04",
+            "title": "Severe Weather Association Significance",
+            "description": variants["both"]["description"],
+            "summary": variants["both"]["summary"],
+            "group": "tracts",
+            "legend": variants["both"]["legend"],
+            "legendTitle": variants["both"]["legendTitle"],
+            "legendNote": variants["both"]["legendNote"],
+            "styles": variants["both"]["styles"],
+            "defaultVariant": "both",
+            "variants": variants,
+        },
+        "SW Significance",
+        "P04",
+    )
 
 
 def build_high_cvi_share_layer(connection: sqlite3.Connection) -> dict[str, Any]:
-    return add_legend_meta(
-        base.build_high_cvi_share_layer(connection),
-        "Equal-interval county bins",
-        "Each range shows the share of high-CVI tracts within a county; counts in parentheses show county totals per bin.",
+    return add_button_meta(
+        add_legend_meta(
+            base.build_high_cvi_share_layer(connection),
+            "Equal-interval county bins",
+            "Each range shows the share of high-CVI tracts within a county; counts in parentheses show county totals per bin.",
+        ),
+        "County Vulnerability",
+        "P08",
     )
 
 
 def build_duration_layer(connection: sqlite3.Connection) -> dict[str, Any]:
-    return add_legend_meta(
-        base.build_duration_layer(connection),
-        "Equal-interval duration bins",
-        "Ranges are based on county p90 outage duration in hours; counts in parentheses show county totals per bin.",
+    return add_button_meta(
+        add_legend_meta(
+            base.build_duration_layer(connection),
+            "Equal-interval duration bins",
+            "Ranges are based on county p90 outage duration in hours; counts in parentheses show county totals per bin.",
+        ),
+        "Duration Risk",
+        "P10",
     )
+
+
+def build_annual_temporal_layer(annual_csv_path: Path) -> dict[str, Any]:
+    rows = load_annual_rows(annual_csv_path)
+    values_by_feature: dict[str, dict[str, dict[str, float | None]]] = {}
+    years_set: set[int] = set()
+
+    metrics = {
+        "outage_occurrence": {
+            "label": "Outage occurrence",
+            "description": "Annual count of outage events per tract.",
+            "unit": "events",
+            "digits": 0,
+            "palette": ["#fff5f0", "#fcbba1", "#fc9272", "#fb6a4a", "#cb181d"],
+        },
+        "outage_duration_mean": {
+            "label": "Outage duration (mean)",
+            "description": "Mean outage duration in hours per tract-year.",
+            "unit": "hours",
+            "digits": 2,
+            "palette": ["#f7fcfd", "#ccece6", "#66c2a4", "#2ca25f", "#006d2c"],
+        },
+        "severe_weather_count": {
+            "label": "Severe-weather exposure",
+            "description": "Annual count of severe-weather-linked outages per tract.",
+            "unit": "events",
+            "digits": 0,
+            "palette": ["#f7fbff", "#c6dbef", "#6baed6", "#3182bd", "#08519c"],
+        },
+    }
+
+    metric_values: dict[str, list[float]] = {key: [] for key in metrics}
+
+    for row in rows:
+        tract_fips = str(row.get("tract_fips", "")).strip().zfill(11)
+        if not tract_fips:
+            continue
+        feature_id = f"tract-{tract_fips}"
+        year = str(int(row["year"]))
+        years_set.add(int(year))
+
+        feature_year = values_by_feature.setdefault(feature_id, {})
+        entry = {
+            "outage_occurrence": maybe_float(row.get("outage_occurrence")),
+            "outage_duration_mean": maybe_float(row.get("outage_duration_mean")),
+            "severe_weather_count": maybe_float(row.get("severe_weather_count")),
+        }
+        feature_year[year] = entry
+        for metric_key, metric_value in entry.items():
+            if metric_value is not None:
+                metric_values[metric_key].append(metric_value)
+
+    metric_options: dict[str, dict[str, Any]] = {}
+    for metric_key, meta in metrics.items():
+        bins = base.equal_interval_bins(metric_values[metric_key]) if metric_values[metric_key] else [0.0, 1.0]
+        metric_options[metric_key] = {**meta, "bins": bins}
+
+    years = sorted(years_set)
+    default_year = str(years[0]) if years else "2014"
+
+    return {
+        "id": "part00_annual_temporal",
+        "part": "Part 00",
+        "buttonPart": "P00",
+        "buttonTitle": "Annual Trends",
+        "title": "Annual Temporal Outages and Severe Weather",
+        "description": "Year-by-year choropleths with playback for outage occurrence, mean outage duration, and severe-weather exposure.",
+        "summary": "Use the timeline controls to animate annual changes and compare spatial patterns across metrics.",
+        "group": "tracts",
+        "legendTitle": "Equal-interval metric bins",
+        "legendNote": "Bins are fixed across all years for each metric so year-to-year color changes are directly comparable.",
+        "legend": [],
+        "styles": {},
+        "temporal": {
+            "years": [str(year) for year in years],
+            "defaultYear": default_year,
+            "metricOptions": metric_options,
+            "defaultMetric": "outage_occurrence",
+            "values": values_by_feature,
+        },
+    }
 
 
 def write_html(
@@ -569,20 +693,20 @@ def write_html(
     }}
     .shell {{
       display: grid;
-      grid-template-columns: minmax(300px, 380px) 1fr;
-      gap: 28px;
-      padding: 28px;
+      grid-template-columns: minmax(280px, 350px) 1fr;
+      gap: 18px;
+      padding: 18px;
       min-height: 100vh;
     }}
     .sidebar {{
       background: linear-gradient(180deg, var(--panel) 0%, var(--panel-soft) 100%);
       color: #fdf8f1;
-      border-radius: 28px;
-      padding: 28px;
+      border-radius: 24px;
+      padding: 20px;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 16px;
     }}
     .eyebrow {{
       text-transform: uppercase;
@@ -593,112 +717,132 @@ def write_html(
     }}
     h1 {{
       margin: 0;
-      font-size: 2rem;
+      font-size: 1.8rem;
       line-height: 1.08;
     }}
     .lede {{
-      margin: 12px 0 0 0;
+      margin: 8px 0 0 0;
       color: #d4e0e4;
-      line-height: 1.5;
-      font-size: 0.98rem;
+      line-height: 1.42;
+      font-size: 0.92rem;
     }}
-    .layer-select {{
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: #fffdfa;
-      color: var(--ink);
-      padding: 10px 36px 10px 14px;
-      font: inherit;
-      font-size: 0.94rem;
+    .layer-buttons {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }}
+    .layer-button {{
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #fdf8f1;
+      text-align: left;
+      padding: 10px 12px;
       cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235f6c72' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
     }}
-    .layer-select:focus {{
-      outline: none;
-      border-color: var(--accent);
+    .layer-button:hover {{
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.28);
+    }}
+    .layer-button.active {{
+      background: rgba(243, 200, 155, 0.16);
+      border-color: rgba(243, 200, 155, 0.8);
+    }}
+    .layer-part {{
+      display: block;
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #f3c89b;
+      margin-bottom: 3px;
+    }}
+    .layer-title {{
+      display: block;
+      font-weight: 700;
+      font-size: 0.88rem;
+      line-height: 1.2;
     }}
     .card {{
       background: rgba(255, 255, 255, 0.07);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 22px;
-      padding: 18px;
+      border-radius: 18px;
+      padding: 14px;
     }}
     .card h2 {{
-      margin: 0 0 10px 0;
-      font-size: 1.05rem;
+      margin: 0 0 8px 0;
+      font-size: 1rem;
     }}
     .card p {{
       margin: 0;
       color: #e6eef1;
-      line-height: 1.5;
-      font-size: 0.95rem;
+      line-height: 1.42;
+      font-size: 0.9rem;
     }}
     .legend-title {{
-      margin-top: 16px;
+      margin-top: 12px;
       color: #f7efe3;
-      font-size: 0.82rem;
+      font-size: 0.76rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }}
     .legend {{
       display: grid;
-      gap: 10px;
-      margin-top: 12px;
+      gap: 8px;
+      margin-top: 10px;
     }}
     .legend-item {{
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       color: #f7efe3;
-      font-size: 0.92rem;
+      font-size: 0.88rem;
     }}
     .legend-swatch {{
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 5px;
       border: 1px solid rgba(255, 255, 255, 0.22);
       flex: 0 0 auto;
     }}
     .card p.legend-note {{
-      margin-top: 14px;
+      margin-top: 10px;
       color: #d4e0e4;
       line-height: 1.45;
       font-size: 0.88rem;
     }}
     .map-card {{
       background: var(--card);
-      border-radius: 28px;
+      border-radius: 24px;
       box-shadow: var(--shadow);
-      padding: 22px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       min-width: 0;
     }}
     .map-toolbar {{
       display: flex;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
       align-items: flex-start;
       flex-wrap: wrap;
       flex-shrink: 0;
     }}
     .map-toolbar h2 {{
       margin: 0;
-      font-size: 1.45rem;
+      font-size: 1.28rem;
     }}
     .map-toolbar p {{
-      margin: 6px 0 0 0;
+      margin: 4px 0 0 0;
       color: var(--muted);
-      line-height: 1.45;
+      line-height: 1.4;
       max-width: 720px;
+      font-size: 0.94rem;
     }}
     .toolbar-actions {{
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
     }}
@@ -706,7 +850,7 @@ def write_html(
       border: 1px solid var(--line);
       background: #fffdfa;
       border-radius: 999px;
-      padding: 10px 14px;
+      padding: 8px 12px;
       color: var(--ink);
       cursor: pointer;
       font: inherit;
@@ -714,13 +858,13 @@ def write_html(
     .variant-control {{
       display: none;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       border: 1px solid var(--line);
       background: #fffdfa;
       border-radius: 999px;
-      padding: 8px 14px;
+      padding: 7px 12px;
       color: var(--ink);
-      font-size: 0.94rem;
+      font-size: 0.9rem;
     }}
     .variant-control span {{
       color: var(--muted);
@@ -743,6 +887,46 @@ def write_html(
       font-size: 0.9rem;
       line-height: 1.5;
       flex-shrink: 0;
+    }}
+    .temporal-control {{
+      display: none;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      background: #fffdfa;
+      border-radius: 999px;
+      padding: 7px 12px;
+      color: var(--ink);
+      font-size: 0.9rem;
+    }}
+    .temporal-control span {{
+      color: var(--muted);
+      white-space: nowrap;
+    }}
+    .temporal-control select {{
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      padding-right: 6px;
+    }}
+    .year-control {{
+      display: none;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      background: #fffdfa;
+      border-radius: 999px;
+      padding: 7px 12px;
+      color: var(--ink);
+      font-size: 0.86rem;
+    }}
+    .year-control input[type="range"] {{
+      width: 150px;
+    }}
+    .year-control strong {{
+      min-width: 46px;
+      text-align: right;
     }}
     .map-frame {{
       position: relative;
@@ -784,7 +968,16 @@ def write_html(
     }}
     @media (max-width: 1120px) {{
       .shell {{ grid-template-columns: 1fr; height: auto; }}
+      .layer-buttons {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
       .map-frame {{ min-height: 58vh; }}
+    }}
+    @media (max-width: 720px) {{
+      .shell {{ padding: 12px; gap: 12px; }}
+      .sidebar {{ padding: 16px; }}
+      .layer-buttons {{ grid-template-columns: 1fr; }}
+      .map-card {{ padding: 14px; }}
+      .map-frame {{ min-height: 44vh; }}
+      .year-control input[type="range"] {{ width: 120px; }}
     }}
   </style>
 </head>
@@ -796,6 +989,7 @@ def write_html(
         <h1>NYC Outage Themes</h1>
         <p class="lede">Interactive map built directly from <code>NYC_Outage_Themes.gpkg</code>. Use the layer buttons to switch views, hover for details, and click a tract or county to zoom in.</p>
       </div>
+      <div class="layer-buttons" id="layerButtons"></div>
       <section class="card">
         <h2 id="infoTitle"></h2>
         <p id="infoDescription"></p>
@@ -812,11 +1006,19 @@ def write_html(
           <p id="mapDescription"></p>
         </div>
         <div class="toolbar-actions">
-          <select class="layer-select" id="layerSelect" aria-label="Select map layer"></select>
           <label class="variant-control" id="variantControl">
             <span>Significance</span>
             <select id="variantSelect" aria-label="Select significance level"></select>
           </label>
+          <label class="temporal-control" id="temporalMetricControl">
+            <span>Metric</span>
+            <select id="temporalMetricSelect" aria-label="Select temporal metric"></select>
+          </label>
+          <label class="year-control" id="temporalYearControl">
+            <input id="temporalYearRange" type="range" min="0" max="0" step="1" value="0" aria-label="Select year">
+            <strong id="temporalYearLabel"></strong>
+          </label>
+          <button type="button" id="temporalPlayPause" style="display:none;">Play</button>
           <button type="button" id="resetView">Reset view</button>
         </div>
       </div>
@@ -840,6 +1042,15 @@ def write_html(
       attribution: "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
       maxZoom: 19,
     }}).addTo(map);
+    const layerButtons = document.getElementById("layerButtons");
+    const temporalMetricControl = document.getElementById("temporalMetricControl");
+    const temporalMetricSelect = document.getElementById("temporalMetricSelect");
+    const temporalYearControl = document.getElementById("temporalYearControl");
+    const temporalYearRange = document.getElementById("temporalYearRange");
+    const temporalYearLabel = document.getElementById("temporalYearLabel");
+    const temporalPlayPause = document.getElementById("temporalPlayPause");
+    const tractById = Object.fromEntries(GEOMETRY.tracts.features.map((f) => [f.properties.id, f.properties]));
+    let temporalTimer = null;
 
     const tooltip = document.getElementById("tooltip");
     const featureToLayer = {{}};
@@ -962,8 +1173,120 @@ def write_html(
       legendNote.style.display = layer.legendNote ? "block" : "none";
     }}
 
+    function stopTemporalPlayback() {{
+      if (temporalTimer) {{
+        clearInterval(temporalTimer);
+        temporalTimer = null;
+      }}
+      temporalPlayPause.textContent = "Play";
+    }}
+
+    function updateTemporalControl(layer) {{
+      const isTemporal = Boolean(layer.temporal);
+      temporalMetricControl.style.display = isTemporal ? "inline-flex" : "none";
+      temporalYearControl.style.display = isTemporal ? "inline-flex" : "none";
+      temporalPlayPause.style.display = isTemporal ? "inline-block" : "none";
+      if (!isTemporal) {{
+        stopTemporalPlayback();
+        return;
+      }}
+
+      const temporal = layer.temporal;
+      const selectedMetric = temporalMetricSelect.value || temporal.defaultMetric || Object.keys(temporal.metricOptions)[0];
+      temporalMetricSelect.innerHTML = "";
+      Object.entries(temporal.metricOptions).forEach(([metricKey, metricMeta]) => {{
+        const option = document.createElement("option");
+        option.value = metricKey;
+        option.textContent = metricMeta.label || metricKey;
+        option.selected = metricKey === selectedMetric;
+        temporalMetricSelect.appendChild(option);
+      }});
+      if (!temporal.metricOptions[temporalMetricSelect.value]) {{
+        temporalMetricSelect.value = temporal.defaultMetric || Object.keys(temporal.metricOptions)[0];
+      }}
+
+      temporalYearRange.min = "0";
+      temporalYearRange.max = String(Math.max(0, temporal.years.length - 1));
+      const selectedYear = temporalYearLabel.dataset.year || temporal.defaultYear || temporal.years[0];
+      const idx = Math.max(0, temporal.years.indexOf(String(selectedYear)));
+      temporalYearRange.value = String(idx);
+      temporalYearLabel.textContent = temporal.years[idx] || "";
+      temporalYearLabel.dataset.year = temporalYearLabel.textContent;
+    }}
+
+    function buildTemporalLegend(metricMeta) {{
+      if (!metricMeta || !metricMeta.bins || metricMeta.bins.length < 2) return [];
+      const rows = [];
+      for (let index = 0; index < metricMeta.bins.length - 1; index += 1) {{
+        rows.push({{
+          label: `${{metricMeta.bins[index].toFixed(metricMeta.digits)}} to ${{metricMeta.bins[index + 1].toFixed(metricMeta.digits)}}`,
+          color: metricMeta.palette[index],
+        }});
+      }}
+      rows.push({{ label: "No data", color: "#d9d2c3" }});
+      return rows;
+    }}
+
+    function getBinIndex(value, bins) {{
+      if (value === null || value === undefined || !bins || bins.length < 2) return -1;
+      for (let index = 0; index < bins.length - 1; index += 1) {{
+        if (value <= bins[index + 1] || index === bins.length - 2) {{
+          return index;
+        }}
+      }}
+      return bins.length - 2;
+    }}
+
+    function applyTemporalLayer(layer) {{
+      const temporal = layer.temporal;
+      const metricKey = temporalMetricSelect.value;
+      const metricMeta = temporal.metricOptions[metricKey];
+      const year = temporal.years[Number(temporalYearRange.value)] || temporal.defaultYear;
+      temporalYearLabel.textContent = year;
+      temporalYearLabel.dataset.year = year;
+
+      let observedCount = 0;
+      let totalValue = 0;
+      tractGeoLayer.eachLayer((l) => {{
+        const featureId = l.feature.properties.id;
+        const yearEntry = ((temporal.values[featureId] || {{}})[year] || {{}});
+        const value = yearEntry[metricKey];
+        let fill = "#d9d2c3";
+        if (value !== null && value !== undefined) {{
+          const binIndex = getBinIndex(Number(value), metricMeta.bins);
+          fill = metricMeta.palette[binIndex];
+          observedCount += 1;
+          totalValue += Number(value);
+        }}
+        l.setStyle({{ fillColor: fill }});
+        l._original_fill = fill;
+        const props = l.feature.properties;
+        const formatted = value === null || value === undefined ? "No data" : Number(value).toFixed(metricMeta.digits);
+        l._tooltip_html = `<strong>Tract ${{props.label || featureId.replace("tract-", "")}}</strong><br>County: ${{props.countyName || "No data"}}<br>Year: ${{year}}<br>${{metricMeta.label}}: ${{formatted}} ${{metricMeta.unit}}`;
+      }});
+
+      updateLegend(buildTemporalLegend(metricMeta));
+      updateLegendMeta({{
+        legendTitle: layer.legendTitle,
+        legendNote: `${{layer.legendNote}} Selected metric: ${{metricMeta.label}}.`,
+      }});
+      infoTitle.textContent = currentLayer.title;
+      infoDescription.textContent = `${{currentLayer.description}} Selected metric: ${{metricMeta.label}}.`;
+      mapSummary.textContent = `${{observedCount}} tracts with data in ${{year}}. Citywide total: ${{totalValue.toFixed(metricMeta.digits)}} ${{metricMeta.unit}}.`;
+      mapPart.textContent = currentLayer.part;
+      mapTitle.textContent = `${{currentLayer.title}} (${{year}})`;
+      mapDescription.textContent = metricMeta.description;
+    }}
+
+
     function renderCurrentLayer() {{
       if (!currentLayer) return;
+      if (currentLayer.temporal) {{
+        toggleGroups("tracts");
+        applyTemporalLayer(currentLayer);
+        resetView();
+        return;
+      }}
       const layer = getActiveLayerView(currentLayer);
       toggleGroups(layer.group);
       applyStyles(layer.group, layer.styles);
@@ -979,23 +1302,29 @@ def write_html(
 
     function buildSelect() {{
       LAYERS.forEach((layer) => {{
-        const option = document.createElement("option");
-        option.value = layer.id;
-        option.textContent = `${{layer.part}}: ${{layer.title}}`;
-        layerSelect.appendChild(option);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "layer-button";
+        button.dataset.layerId = layer.id;
+        button.innerHTML = `<span class="layer-part">${{layer.buttonPart || layer.part}}</span><span class="layer-title">${{layer.buttonTitle || layer.title}}</span>`;
+        button.addEventListener("click", () => setLayer(layer.id));
+        layerButtons.appendChild(button);
       }});
     }}
 
     function setLayer(layerId) {{
       const layer = LAYERS.find((candidate) => candidate.id === layerId);
       if (!layer) return;
+      stopTemporalPlayback();
       currentLayer = layer;
-      layerSelect.value = layerId;
+      document.querySelectorAll(".layer-button").forEach((button) => {{
+        button.classList.toggle("active", button.dataset.layerId === layerId);
+      }});
       updateVariantControl(layer);
+      updateTemporalControl(layer);
       renderCurrentLayer();
     }}
 
-    const layerSelect = document.getElementById("layerSelect");
     const legend = document.getElementById("legend");
     const legendTitle = document.getElementById("legendTitle");
     const legendNote = document.getElementById("legendNote");
@@ -1008,13 +1337,31 @@ def write_html(
     const mapDescription = document.getElementById("mapDescription");
     const mapSummary = document.getElementById("mapSummary");
 
+    function resetView() {{ map.setView([40.655, -73.94], 10); }}
+
     buildSelect();
-    layerSelect.addEventListener("change", () => setLayer(layerSelect.value));
     variantSelect.addEventListener("change", renderCurrentLayer);
-    document.getElementById("resetView").addEventListener("click", () => {{
-      map.setView([40.655, -73.94], 10);
+    temporalMetricSelect.addEventListener("change", renderCurrentLayer);
+    temporalYearRange.addEventListener("input", () => {{
+      stopTemporalPlayback();
+      renderCurrentLayer();
     }});
-    setLayer((LAYERS.find((layer) => layer.id === "part06_clusters") || LAYERS[0]).id);
+    temporalPlayPause.addEventListener("click", () => {{
+      if (!currentLayer || !currentLayer.temporal) return;
+      if (temporalTimer) {{
+        stopTemporalPlayback();
+        return;
+      }}
+      temporalPlayPause.textContent = "Pause";
+      temporalTimer = setInterval(() => {{
+        const next = Number(temporalYearRange.value) + 1;
+        const max = Number(temporalYearRange.max);
+        temporalYearRange.value = String(next > max ? 0 : next);
+        renderCurrentLayer();
+      }}, 1100);
+    }});
+    document.getElementById("resetView").addEventListener("click", resetView);
+    setLayer((LAYERS.find((layer) => layer.id === "part00_annual_temporal") || LAYERS[0]).id);
   </script>
 </body>
 </html>
@@ -1027,6 +1374,7 @@ def main() -> None:
     args = parse_args()
     gpkg_path = resolve_existing_file([args.gpkg])
     csv_path = resolve_existing_file([args.significance_csv])
+    annual_csv_path = resolve_existing_file([args.annual_csv])
 
     if not args.skip_sync:
         sync_significance_to_gpkg(gpkg_path, csv_path)
@@ -1040,6 +1388,7 @@ def main() -> None:
         map_width, map_height = base.enrich_geometry(tract_records + county_records, bounds)
 
         layers = [
+            build_annual_temporal_layer(annual_csv_path),
             build_sw_significance_layer(connection),
             build_cluster_layer(connection),
             build_cvi_layer(connection),

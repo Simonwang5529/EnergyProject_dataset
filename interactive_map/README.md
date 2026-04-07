@@ -6,10 +6,17 @@ This folder turns the existing `NYC_Outage_Themes.gpkg` file into a browser-read
 
 https://simonwang5529.github.io/EnergyProject_dataset/
 
+## Layer documentation
+
+- `MAP_LAYER_GUIDE.md`
+  - Quick reference for the seven map views, what each one shows, and how to read them.
+
 ## What it builds
 
 - `output/nyc_outage_updated_layers.html`
-  - Self-contained interactive map for the updated part 06 to part 10 views:
+  - Self-contained interactive map for the current seven views:
+    - Part 00: annual temporal outages and severe weather
+    - Part 04: severe weather significance
     - Part 06: tract seasonality clusters
     - Part 07: tract CVI overall
     - Part 07: tract priority overlap
@@ -27,7 +34,7 @@ https://simonwang5529.github.io/EnergyProject_dataset/
 Run:
 
 ```bash
-python3 interactive_map/build_interactive_map.py
+python3 interactive_map/build_interactive_map_gpkg.py
 ```
 
 Alternatively, run:
