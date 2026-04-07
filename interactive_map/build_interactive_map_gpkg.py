@@ -17,6 +17,7 @@ PROJECT_DIR = Path(__file__).resolve().parent
 ROOT = PROJECT_DIR.parents[0]
 DEFAULT_GPKG_PATH = ROOT / "NYC_Outage_Themes.gpkg"
 DEFAULT_SIG_CSV_PATH = ROOT / "EDA_Outage_Calculated_CSVs" / "part_04" / "tract_sw.csv"
+DEFAULT_ANNUAL_CSV_PATH = ROOT / "EDA_Outage_Calculated_CSVs" / "part_00_foundation" / "annual_panel.csv"
 DEFAULT_HTML_PATH = ROOT / "nyc_outage_updated_layers.html"
 DEFAULT_DOCS_INDEX_PATH = ROOT / "docs" / "index.html"
 DEFAULT_COUNTY_PNG_PATH = ROOT / "part_08_county_vulnerability_concentration.png"
@@ -84,6 +85,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Build from the GeoPackage as-is without writing CSV significance columns into it first.",
     )
+    parser.add_argument(
+        "--annual-csv",
+        type=Path,
+        default=DEFAULT_ANNUAL_CSV_PATH,
+        help="Annual panel CSV for the Part 00 temporal choropleth.",
+    )
     return parser.parse_args()
 
 
@@ -98,6 +105,11 @@ def load_spatialite(connection: sqlite3.Connection) -> None:
 
 
 def load_significance_rows(csv_path: Path) -> list[dict[str, str]]:
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def load_annual_rows(csv_path: Path) -> list[dict[str, str]]:
     with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
         return list(csv.DictReader(handle))
 
@@ -526,6 +538,85 @@ def build_duration_layer(connection: sqlite3.Connection) -> dict[str, Any]:
     )
 
 
+def build_annual_temporal_layer(annual_csv_path: Path) -> dict[str, Any]:
+    rows = load_annual_rows(annual_csv_path)
+    values_by_feature: dict[str, dict[str, dict[str, float | None]]] = {}
+    years_set: set[int] = set()
+
+    metrics = {
+        "outage_occurrence": {
+            "label": "Outage occurrence",
+            "description": "Annual count of outage events per tract.",
+            "unit": "events",
+            "digits": 0,
+            "palette": ["#fff5f0", "#fcbba1", "#fc9272", "#fb6a4a", "#cb181d"],
+        },
+        "outage_duration_mean": {
+            "label": "Outage duration (mean)",
+            "description": "Mean outage duration in hours per tract-year.",
+            "unit": "hours",
+            "digits": 2,
+            "palette": ["#f7fcfd", "#ccece6", "#66c2a4", "#2ca25f", "#006d2c"],
+        },
+        "severe_weather_count": {
+            "label": "Severe-weather exposure",
+            "description": "Annual count of severe-weather-linked outages per tract.",
+            "unit": "events",
+            "digits": 0,
+            "palette": ["#f7fbff", "#c6dbef", "#6baed6", "#3182bd", "#08519c"],
+        },
+    }
+
+    metric_values: dict[str, list[float]] = {key: [] for key in metrics}
+
+    for row in rows:
+        tract_fips = str(row.get("tract_fips", "")).strip().zfill(11)
+        if not tract_fips:
+            continue
+        feature_id = f"tract-{tract_fips}"
+        year = str(int(row["year"]))
+        years_set.add(int(year))
+
+        feature_year = values_by_feature.setdefault(feature_id, {})
+        entry = {
+            "outage_occurrence": maybe_float(row.get("outage_occurrence")),
+            "outage_duration_mean": maybe_float(row.get("outage_duration_mean")),
+            "severe_weather_count": maybe_float(row.get("severe_weather_count")),
+        }
+        feature_year[year] = entry
+        for metric_key, metric_value in entry.items():
+            if metric_value is not None:
+                metric_values[metric_key].append(metric_value)
+
+    metric_options: dict[str, dict[str, Any]] = {}
+    for metric_key, meta in metrics.items():
+        bins = base.equal_interval_bins(metric_values[metric_key]) if metric_values[metric_key] else [0.0, 1.0]
+        metric_options[metric_key] = {**meta, "bins": bins}
+
+    years = sorted(years_set)
+    default_year = str(years[0]) if years else "2014"
+
+    return {
+        "id": "part00_annual_temporal",
+        "part": "Part 00",
+        "title": "Annual Temporal Outages and Severe Weather",
+        "description": "Year-by-year choropleths with playback for outage occurrence, mean outage duration, and severe-weather exposure.",
+        "summary": "Use the timeline controls to animate annual changes and compare spatial patterns across metrics.",
+        "group": "tracts",
+        "legendTitle": "Equal-interval metric bins",
+        "legendNote": "Bins are fixed across all years for each metric so year-to-year color changes are directly comparable.",
+        "legend": [],
+        "styles": {},
+        "temporal": {
+            "years": [str(year) for year in years],
+            "defaultYear": default_year,
+            "metricOptions": metric_options,
+            "defaultMetric": "outage_occurrence",
+            "values": values_by_feature,
+        },
+    }
+
+
 def write_html(
     tract_geometry: list[dict[str, Any]],
     county_geometry: list[dict[str, Any]],
@@ -750,6 +841,46 @@ def write_html(
       font: inherit;
       padding-right: 6px;
     }}
+    .temporal-control {{
+      display: none;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      background: #fffdfa;
+      border-radius: 999px;
+      padding: 8px 14px;
+      color: var(--ink);
+      font-size: 0.94rem;
+    }}
+    .temporal-control span {{
+      color: var(--muted);
+      white-space: nowrap;
+    }}
+    .temporal-control select {{
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      padding-right: 6px;
+    }}
+    .year-control {{
+      display: none;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      background: #fffdfa;
+      border-radius: 999px;
+      padding: 8px 14px;
+      color: var(--ink);
+      font-size: 0.9rem;
+    }}
+    .year-control input[type="range"] {{
+      width: 180px;
+    }}
+    .year-control strong {{
+      min-width: 46px;
+      text-align: right;
+    }}
     .map-frame {{
       position: relative;
       border-radius: 24px;
@@ -812,7 +943,7 @@ def write_html(
       <div>
         <div class="eyebrow">Presentation Build</div>
         <h1>NYC Outage Themes</h1>
-        <p class="lede">Interactive map built directly from <code>NYC_Outage_Themes.gpkg</code>. Use the layer buttons to move across the part 04 to part 10 views, hover for details, and click a tract or county to zoom in.</p>
+        <p class="lede">Interactive map built directly from <code>NYC_Outage_Themes.gpkg</code>. Use the layer buttons to move across the part 00 to part 10 views, hover for details, and click a tract or county to zoom in.</p>
       </div>
       <div class="layer-buttons" id="layerButtons"></div>
       <section class="card">
@@ -839,6 +970,15 @@ def write_html(
             <span>Significance</span>
             <select id="variantSelect" aria-label="Select significance level"></select>
           </label>
+          <label class="temporal-control" id="temporalMetricControl">
+            <span>Metric</span>
+            <select id="temporalMetricSelect" aria-label="Select temporal metric"></select>
+          </label>
+          <label class="year-control" id="temporalYearControl">
+            <input id="temporalYearRange" type="range" min="0" max="0" step="1" value="0" aria-label="Select year">
+            <strong id="temporalYearLabel"></strong>
+          </label>
+          <button type="button" id="temporalPlayPause" style="display:none;">Play</button>
           <button type="button" id="resetView">Reset view</button>
         </div>
       </div>
@@ -874,8 +1014,16 @@ def write_html(
     const mapPart = document.getElementById("mapPart");
     const mapTitle = document.getElementById("mapTitle");
     const mapDescription = document.getElementById("mapDescription");
+    const temporalMetricControl = document.getElementById("temporalMetricControl");
+    const temporalMetricSelect = document.getElementById("temporalMetricSelect");
+    const temporalYearControl = document.getElementById("temporalYearControl");
+    const temporalYearRange = document.getElementById("temporalYearRange");
+    const temporalYearLabel = document.getElementById("temporalYearLabel");
+    const temporalPlayPause = document.getElementById("temporalPlayPause");
     const defaultViewBox = [0, 0, {map_width}, {map_height}];
+    const tractById = Object.fromEntries(GEOMETRY.tracts.map((feature) => [feature.id, feature]));
     let currentLayer = null;
+    let temporalTimer = null;
 
     function createPaths(groupName, target, items, className) {{
       items.forEach((item) => {{
@@ -955,6 +1103,110 @@ def write_html(
       legendNote.style.display = layer.legendNote ? "block" : "none";
     }}
 
+    function stopTemporalPlayback() {{
+      if (temporalTimer) {{
+        clearInterval(temporalTimer);
+        temporalTimer = null;
+      }}
+      temporalPlayPause.textContent = "Play";
+    }}
+
+    function updateTemporalControl(layer) {{
+      const isTemporal = Boolean(layer.temporal);
+      temporalMetricControl.style.display = isTemporal ? "inline-flex" : "none";
+      temporalYearControl.style.display = isTemporal ? "inline-flex" : "none";
+      temporalPlayPause.style.display = isTemporal ? "inline-block" : "none";
+      if (!isTemporal) {{
+        stopTemporalPlayback();
+        return;
+      }}
+
+      const temporal = layer.temporal;
+      const selectedMetric = temporalMetricSelect.value || temporal.defaultMetric || Object.keys(temporal.metricOptions)[0];
+      temporalMetricSelect.innerHTML = "";
+      Object.entries(temporal.metricOptions).forEach(([metricKey, metricMeta]) => {{
+        const option = document.createElement("option");
+        option.value = metricKey;
+        option.textContent = metricMeta.label || metricKey;
+        option.selected = metricKey === selectedMetric;
+        temporalMetricSelect.appendChild(option);
+      }});
+      if (!temporal.metricOptions[temporalMetricSelect.value]) {{
+        temporalMetricSelect.value = temporal.defaultMetric || Object.keys(temporal.metricOptions)[0];
+      }}
+
+      temporalYearRange.min = "0";
+      temporalYearRange.max = String(Math.max(0, temporal.years.length - 1));
+      const selectedYear = temporalYearLabel.dataset.year || temporal.defaultYear || temporal.years[0];
+      const idx = Math.max(0, temporal.years.indexOf(String(selectedYear)));
+      temporalYearRange.value = String(idx);
+      temporalYearLabel.textContent = temporal.years[idx] || "";
+      temporalYearLabel.dataset.year = temporalYearLabel.textContent;
+    }}
+
+    function buildTemporalLegend(metricMeta) {{
+      if (!metricMeta || !metricMeta.bins || metricMeta.bins.length < 2) return [];
+      const rows = [];
+      for (let index = 0; index < metricMeta.bins.length - 1; index += 1) {{
+        rows.push({{
+          label: `${{metricMeta.bins[index].toFixed(metricMeta.digits)}} to ${{metricMeta.bins[index + 1].toFixed(metricMeta.digits)}}`,
+          color: metricMeta.palette[index],
+        }});
+      }}
+      rows.push({{ label: "No data", color: "#d9d2c3" }});
+      return rows;
+    }}
+
+    function getBinIndex(value, bins) {{
+      if (value === null || value === undefined || !bins || bins.length < 2) return -1;
+      for (let index = 0; index < bins.length - 1; index += 1) {{
+        if (value <= bins[index + 1] || index === bins.length - 2) {{
+          return index;
+        }}
+      }}
+      return bins.length - 2;
+    }}
+
+    function applyTemporalLayer(layer) {{
+      const temporal = layer.temporal;
+      const metricKey = temporalMetricSelect.value;
+      const metricMeta = temporal.metricOptions[metricKey];
+      const year = temporal.years[Number(temporalYearRange.value)] || temporal.defaultYear;
+      temporalYearLabel.textContent = year;
+      temporalYearLabel.dataset.year = year;
+
+      let observedCount = 0;
+      let totalValue = 0;
+      document.querySelectorAll(".tract-feature").forEach((path) => {{
+        const featureId = path.dataset.featureId;
+        const yearEntry = ((temporal.values[featureId] || {{}})[year] || {{}});
+        const value = yearEntry[metricKey];
+        let fill = "#d9d2c3";
+        if (value !== null && value !== undefined) {{
+          const binIndex = getBinIndex(Number(value), metricMeta.bins);
+          fill = metricMeta.palette[binIndex];
+          observedCount += 1;
+          totalValue += Number(value);
+        }}
+        path.style.fill = fill;
+        const feature = tractById[featureId] || {{}};
+        const formatted = value === null || value === undefined ? "No data" : Number(value).toFixed(metricMeta.digits);
+        path.dataset.tooltip = `<strong>Tract ${{feature.label || featureId.replace("tract-", "")}}</strong><br>County: ${{feature.countyName || "No data"}}<br>Year: ${{year}}<br>${{metricMeta.label}}: ${{formatted}} ${{metricMeta.unit}}`;
+      }});
+
+      updateLegend(buildTemporalLegend(metricMeta));
+      updateLegendMeta({{
+        legendTitle: layer.legendTitle,
+        legendNote: `${{layer.legendNote}} Selected metric: ${{metricMeta.label}}.`,
+      }});
+      infoTitle.textContent = currentLayer.title;
+      infoDescription.textContent = `${{currentLayer.description}} Selected metric: ${{metricMeta.label}}.`;
+      infoSummary.textContent = `${{observedCount}} tracts with data in ${{year}}. Citywide total: ${{totalValue.toFixed(metricMeta.digits)}} ${{metricMeta.unit}}.`;
+      mapPart.textContent = currentLayer.part;
+      mapTitle.textContent = `${{currentLayer.title}} (${{year}})`;
+      mapDescription.textContent = metricMeta.description;
+    }}
+
     function applyStyles(groupName, styles) {{
       const selector = groupName === "tracts" ? ".tract-feature" : ".county-feature";
       document.querySelectorAll(selector).forEach((path) => {{
@@ -975,6 +1227,12 @@ def write_html(
 
     function renderCurrentLayer() {{
       if (!currentLayer) return;
+      if (currentLayer.temporal) {{
+        toggleGroups("tracts");
+        applyTemporalLayer(currentLayer);
+        resetView();
+        return;
+      }}
       const layer = getActiveLayerView(currentLayer);
       toggleGroups(layer.group);
       applyStyles(layer.group, layer.styles);
@@ -1004,11 +1262,13 @@ def write_html(
     function setLayer(layerId) {{
       const layer = LAYERS.find((candidate) => candidate.id === layerId);
       if (!layer) return;
+      stopTemporalPlayback();
       currentLayer = layer;
       document.querySelectorAll(".layer-button").forEach((button) => {{
         button.classList.toggle("active", button.dataset.layerId === layerId);
       }});
       updateVariantControl(layer);
+      updateTemporalControl(layer);
       renderCurrentLayer();
     }}
 
@@ -1016,9 +1276,28 @@ def write_html(
     createPaths("counties", countyGroup, GEOMETRY.counties, "county-feature");
     buildButtons();
     variantSelect.addEventListener("change", renderCurrentLayer);
+    temporalMetricSelect.addEventListener("change", renderCurrentLayer);
+    temporalYearRange.addEventListener("input", () => {{
+      stopTemporalPlayback();
+      renderCurrentLayer();
+    }});
+    temporalPlayPause.addEventListener("click", () => {{
+      if (!currentLayer || !currentLayer.temporal) return;
+      if (temporalTimer) {{
+        stopTemporalPlayback();
+        return;
+      }}
+      temporalPlayPause.textContent = "Pause";
+      temporalTimer = setInterval(() => {{
+        const next = Number(temporalYearRange.value) + 1;
+        const max = Number(temporalYearRange.max);
+        temporalYearRange.value = String(next > max ? 0 : next);
+        renderCurrentLayer();
+      }}, 1100);
+    }});
     document.getElementById("resetView").addEventListener("click", resetView);
     svg.addEventListener("dblclick", resetView);
-    setLayer((LAYERS.find((layer) => layer.id === "part06_clusters") || LAYERS[0]).id);
+    setLayer((LAYERS.find((layer) => layer.id === "part00_annual_temporal") || LAYERS[0]).id);
   </script>
 </body>
 </html>
@@ -1031,6 +1310,7 @@ def main() -> None:
     args = parse_args()
     gpkg_path = resolve_existing_file([args.gpkg])
     csv_path = resolve_existing_file([args.significance_csv])
+    annual_csv_path = resolve_existing_file([args.annual_csv])
 
     if not args.skip_sync:
         sync_significance_to_gpkg(gpkg_path, csv_path)
@@ -1044,6 +1324,7 @@ def main() -> None:
         map_width, map_height = base.enrich_geometry(tract_records + county_records, bounds)
 
         layers = [
+            build_annual_temporal_layer(annual_csv_path),
             build_sw_significance_layer(connection),
             build_cluster_layer(connection),
             build_cvi_layer(connection),
