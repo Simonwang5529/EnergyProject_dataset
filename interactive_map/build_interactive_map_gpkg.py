@@ -477,12 +477,12 @@ def build_sw_significance_layer(connection: sqlite3.Connection) -> dict[str, Any
         if variant_id == "both":
             summary = (
                 f"{both_counts.get('99% significant', 0)} tracts meet the 99% threshold and "
-                f"{both_counts.get('95% significant only', 0)} additional tracts meet the 95% threshold only."
+                f"{both_counts.get('95% significant only', 0)} additional tracts meet the 95% threshold only. These areas tend to feel the strongest effects of weather-induced outages."
             )
         elif variant_id == "sig_05":
-            summary = f"{counts.get('Significant at 95%', 0)} tracts meet the 95% significance threshold for the severe-weather versus outage-occurrence association."
+            summary = f"{counts.get('Significant at 95%', 0)} tracts meet the 95% significance threshold for the severe-weather versus outage-occurrence association. These areas tend to feel the strongest effects of weather-induced outages."
         else:
-            summary = f"{counts.get('Significant at 99%', 0)} tracts meet the 99% significance threshold for the severe-weather versus outage-occurrence association."
+            summary = f"{counts.get('Significant at 99%', 0)} tracts meet the 99% significance threshold for the severe-weather versus outage-occurrence association. These areas tend to feel the strongest effects of weather-induced outages."
 
         variants[variant_id] = {
             "label": meta["label"],

@@ -279,7 +279,7 @@ def build_cluster_layer(connection: sqlite3.Connection) -> dict[str, Any]:
 
     summary = (
         f"{counts.get('Cluster 0', 0) + counts.get('Cluster 1', 0) + counts.get('Cluster 2', 0) + counts.get('Cluster 3', 0)} "
-        f"tracts are assigned to four seasonality clusters, with {counts.get('No cluster', 0)} tracts left unclassified."
+        f"tracts are assigned to four seasonality clusters, with {counts.get('No cluster', 0)} tracts left unclassified. To be clear, the boroughs ended up cleanly organizing into different clusters."
     )
 
     return {
@@ -341,7 +341,7 @@ def build_cvi_layer(connection: sqlite3.Connection) -> dict[str, Any]:
         "part": "Part 07",
         "title": "Overall Climate Vulnerability Index",
         "description": "Tract-level choropleth for the overall CVI score, highlighting the structural vulnerability landscape.",
-        "summary": f"Overall CVI ranges from {min(values):.3f} to {max(values):.3f} across 2,325 tracts.",
+        "summary": f"Overall CVI ranges from {min(values):.3f} to {max(values):.3f} across 2,325 tracts. While there are certainly some areas that are particularly vulnerable, and others that are much less, CVI seems to be almost evenly distributed across the city.",
         "group": "tracts",
         "legend": legend,
         "styles": styles,
@@ -392,7 +392,7 @@ def build_priority_layer(connection: sqlite3.Connection) -> dict[str, Any]:
         )
         styles[dom_id] = {"fill": color_map[label], "tooltip": tooltip}
 
-    summary = f"{counts.get('Priority tract', 0)} tracts are flagged as overlap priorities where vulnerability and outage burden are jointly elevated."
+    summary = f"{counts.get('Priority tract', 0)} tracts are flagged as overlap priorities where vulnerability and outage burden are jointly elevated. These areas would require the most attention going forward."
 
     return {
         "id": "part07_priority",
@@ -451,7 +451,7 @@ def build_high_cvi_share_layer(connection: sqlite3.Connection) -> dict[str, Any]
         "part": "Part 08",
         "title": "County Vulnerability Concentration",
         "description": "County choropleth showing the share of tracts classified as highly vulnerable on the CVI.",
-        "summary": f"{top_county['county_name']} has the highest share of high-CVI tracts at {format_pct(top_county['high_cvi_share'])}.",
+        "summary": f"{top_county['county_name']} has the highest share of high-CVI tracts at {format_pct(top_county['high_cvi_share'])}. This percentage far exceeds the other boroughs, indicating urgent structural issues.",
         "group": "counties",
         "legend": [{"label": f"{bin_label(edges, index, digits=2)} ({counts[bin_label(edges, index, digits=2)]})", "color": palette[index]} for index in range(len(edges) - 1)],
         "styles": styles,
@@ -503,7 +503,7 @@ def build_duration_layer(connection: sqlite3.Connection) -> dict[str, Any]:
         "part": "Part 10",
         "title": "County Duration Risk (2023)",
         "description": "County map for prolonged outage severity using the 90th-percentile outage duration.",
-        "summary": f"County duration p90 ranges from {min(values):.2f} to {max(values):.2f} hours in the 2023 extract.",
+        "summary": f"County duration p90 ranges from {min(values):.2f} to {max(values):.2f} hours in the 2023 extract. For the most part, outage duration was dependent on the severity of the weather event.",
         "group": "counties",
         "legend": [{"label": f"{bin_label(edges, index, digits=2)} ({counts[bin_label(edges, index, digits=2)]})", "color": palette[index]} for index in range(len(edges) - 1)],
         "styles": styles,
