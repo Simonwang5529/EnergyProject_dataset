@@ -14,7 +14,7 @@ This note records the seven views currently included in the NYC outage themes in
 | `P08 County Vulnerability` | County Vulnerability Concentration | Counties | County choropleth of the share of high-CVI tracts. | Summarizes where vulnerability is most concentrated at the county level. |
 | `P10 Duration Risk` | County Duration Risk (2023) | Counties | County map of long-outage severity. | Compares 2023 county-level outage duration risk using the 90th-percentile duration and related long-outage indicators. |
 
-## How to read them
+## Instructions
 
 ### `P00 Annual Trends`
 - Use the `Metric` dropdown to switch between outage occurrence, mean outage duration, and severe-weather exposure.
