@@ -188,6 +188,13 @@ def add_legend_meta(layer: dict[str, Any], title: str, note: str) -> dict[str, A
     return layer
 
 
+def add_button_meta(layer: dict[str, Any], short_title: str, short_part: str | None = None) -> dict[str, Any]:
+    layer["buttonTitle"] = short_title
+    if short_part:
+        layer["buttonPart"] = short_part
+    return layer
+
+
 def build_cluster_layer(connection: sqlite3.Connection) -> dict[str, Any]:
     rows = connection.execute(
         """
@@ -231,23 +238,27 @@ def build_cluster_layer(connection: sqlite3.Connection) -> dict[str, Any]:
         f"{counts.get('Cluster 0', 0) + counts.get('Cluster 1', 0) + counts.get('Cluster 2', 0) + counts.get('Cluster 3', 0)} "
         f"tracts are assigned to four seasonality clusters, with {counts.get('No cluster', 0)} tracts left unclassified."
     )
-    return add_legend_meta(
-        {
-            "id": "part06_clusters",
-            "part": "Part 06",
-            "title": "Tract Outage Seasonality Clusters",
-            "description": "Categorical cluster map showing where outage seasonality patterns differ across NYC tracts.",
-            "summary": summary,
-            "group": "tracts",
-            "legend": base.discrete_legend(
-                counts,
-                color_map,
-                ["Cluster 0", "Cluster 1", "Cluster 2", "Cluster 3", "No cluster"],
-            ),
-            "styles": styles,
-        },
-        "Seasonality categories",
-        "Counts in parentheses show how many tracts fall in each cluster.",
+    return add_button_meta(
+        add_legend_meta(
+            {
+                "id": "part06_clusters",
+                "part": "Part 06",
+                "title": "Tract Outage Seasonality Clusters",
+                "description": "Categorical cluster map showing where outage seasonality patterns differ across NYC tracts.",
+                "summary": summary,
+                "group": "tracts",
+                "legend": base.discrete_legend(
+                    counts,
+                    color_map,
+                    ["Cluster 0", "Cluster 1", "Cluster 2", "Cluster 3", "No cluster"],
+                ),
+                "styles": styles,
+            },
+            "Seasonality categories",
+            "Counts in parentheses show how many tracts fall in each cluster.",
+        ),
+        "Seasonality Clusters",
+        "P06",
     )
 
 
@@ -300,19 +311,23 @@ def build_cvi_layer(connection: sqlite3.Connection) -> dict[str, Any]:
         }
         for index in range(len(edges) - 1)
     ]
-    return add_legend_meta(
-        {
-            "id": "part07_cvi",
-            "part": "Part 07",
-            "title": "Overall Climate Vulnerability Index",
-            "description": "Tract-level choropleth for the overall CVI score, highlighting the structural vulnerability landscape.",
-            "summary": f"Overall CVI ranges from {min(values):.3f} to {max(values):.3f} across {len(rows):,} tracts.",
-            "group": "tracts",
-            "legend": legend,
-            "styles": styles,
-        },
-        "Equal-interval CVI bins",
-        "Each swatch shows a score range; counts in parentheses show how many tracts land in that range.",
+    return add_button_meta(
+        add_legend_meta(
+            {
+                "id": "part07_cvi",
+                "part": "Part 07",
+                "title": "Overall Climate Vulnerability Index",
+                "description": "Tract-level choropleth for the overall CVI score, highlighting the structural vulnerability landscape.",
+                "summary": f"Overall CVI ranges from {min(values):.3f} to {max(values):.3f} across {len(rows):,} tracts.",
+                "group": "tracts",
+                "legend": legend,
+                "styles": styles,
+            },
+            "Equal-interval CVI bins",
+            "Each swatch shows a score range; counts in parentheses show how many tracts land in that range.",
+        ),
+        "Overall CVI",
+        "P07",
     )
 
 
@@ -363,19 +378,23 @@ def build_priority_layer(connection: sqlite3.Connection) -> dict[str, Any]:
             ),
         }
 
-    return add_legend_meta(
-        {
-            "id": "part07_priority",
-            "part": "Part 07",
-            "title": "Priority Overlap: Vulnerability + Outage Burden",
-            "description": "Rule-based priority map highlighting tracts where high vulnerability overlaps with elevated outage burden.",
-            "summary": f"{counts.get('Priority tract', 0)} tracts are flagged as overlap priorities where vulnerability and outage burden are jointly elevated.",
-            "group": "tracts",
-            "legend": base.discrete_legend(counts, color_map, ["Priority tract", "Not flagged", "No data"]),
-            "styles": styles,
-        },
-        "Priority status",
-        "Priority tracts are the overlap areas where vulnerability and outage burden are both elevated.",
+    return add_button_meta(
+        add_legend_meta(
+            {
+                "id": "part07_priority",
+                "part": "Part 07",
+                "title": "Priority Overlap: Vulnerability + Outage Burden",
+                "description": "Rule-based priority map highlighting tracts where high vulnerability overlaps with elevated outage burden.",
+                "summary": f"{counts.get('Priority tract', 0)} tracts are flagged as overlap priorities where vulnerability and outage burden are jointly elevated.",
+                "group": "tracts",
+                "legend": base.discrete_legend(counts, color_map, ["Priority tract", "Not flagged", "No data"]),
+                "styles": styles,
+            },
+            "Priority status",
+            "Priority tracts are the overlap areas where vulnerability and outage burden are both elevated.",
+        ),
+        "Priority Overlap",
+        "P07",
     )
 
 
@@ -506,35 +525,47 @@ def build_sw_significance_layer(connection: sqlite3.Connection) -> dict[str, Any
             "styles": variant_styles[variant_id],
         }
 
-    return {
-        "id": "part04_sw_significance",
-        "part": "Part 04",
-        "title": "Severe Weather Association Significance",
-        "description": variants["both"]["description"],
-        "summary": variants["both"]["summary"],
-        "group": "tracts",
-        "legend": variants["both"]["legend"],
-        "legendTitle": variants["both"]["legendTitle"],
-        "legendNote": variants["both"]["legendNote"],
-        "styles": variants["both"]["styles"],
-        "defaultVariant": "both",
-        "variants": variants,
-    }
+    return add_button_meta(
+        {
+            "id": "part04_sw_significance",
+            "part": "Part 04",
+            "title": "Severe Weather Association Significance",
+            "description": variants["both"]["description"],
+            "summary": variants["both"]["summary"],
+            "group": "tracts",
+            "legend": variants["both"]["legend"],
+            "legendTitle": variants["both"]["legendTitle"],
+            "legendNote": variants["both"]["legendNote"],
+            "styles": variants["both"]["styles"],
+            "defaultVariant": "both",
+            "variants": variants,
+        },
+        "SW Significance",
+        "P04",
+    )
 
 
 def build_high_cvi_share_layer(connection: sqlite3.Connection) -> dict[str, Any]:
-    return add_legend_meta(
-        base.build_high_cvi_share_layer(connection),
-        "Equal-interval county bins",
-        "Each range shows the share of high-CVI tracts within a county; counts in parentheses show county totals per bin.",
+    return add_button_meta(
+        add_legend_meta(
+            base.build_high_cvi_share_layer(connection),
+            "Equal-interval county bins",
+            "Each range shows the share of high-CVI tracts within a county; counts in parentheses show county totals per bin.",
+        ),
+        "County Vulnerability",
+        "P08",
     )
 
 
 def build_duration_layer(connection: sqlite3.Connection) -> dict[str, Any]:
-    return add_legend_meta(
-        base.build_duration_layer(connection),
-        "Equal-interval duration bins",
-        "Ranges are based on county p90 outage duration in hours; counts in parentheses show county totals per bin.",
+    return add_button_meta(
+        add_legend_meta(
+            base.build_duration_layer(connection),
+            "Equal-interval duration bins",
+            "Ranges are based on county p90 outage duration in hours; counts in parentheses show county totals per bin.",
+        ),
+        "Duration Risk",
+        "P10",
     )
 
 
@@ -599,6 +630,8 @@ def build_annual_temporal_layer(annual_csv_path: Path) -> dict[str, Any]:
     return {
         "id": "part00_annual_temporal",
         "part": "Part 00",
+        "buttonPart": "P00",
+        "buttonTitle": "Annual Trends",
         "title": "Annual Temporal Outages and Severe Weather",
         "description": "Year-by-year choropleths with playback for outage occurrence, mean outage duration, and severe-weather exposure.",
         "summary": "Use the timeline controls to animate annual changes and compare spatial patterns across metrics.",
@@ -659,20 +692,20 @@ def write_html(
     }}
     .shell {{
       display: grid;
-      grid-template-columns: minmax(300px, 380px) 1fr;
-      gap: 28px;
-      padding: 28px;
+      grid-template-columns: minmax(280px, 350px) 1fr;
+      gap: 18px;
+      padding: 18px;
       min-height: 100vh;
     }}
     .sidebar {{
       background: linear-gradient(180deg, var(--panel) 0%, var(--panel-soft) 100%);
       color: #fdf8f1;
-      border-radius: 28px;
-      padding: 28px;
+      border-radius: 24px;
+      padding: 20px;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 16px;
     }}
     .eyebrow {{
       text-transform: uppercase;
@@ -683,27 +716,28 @@ def write_html(
     }}
     h1 {{
       margin: 0;
-      font-size: 2rem;
+      font-size: 1.8rem;
       line-height: 1.08;
     }}
     .lede {{
-      margin: 12px 0 0 0;
+      margin: 8px 0 0 0;
       color: #d4e0e4;
-      line-height: 1.5;
-      font-size: 0.98rem;
+      line-height: 1.42;
+      font-size: 0.92rem;
     }}
     .layer-buttons {{
       display: grid;
-      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
     }}
     .layer-button {{
       width: 100%;
       border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 16px;
+      border-radius: 14px;
       background: rgba(255, 255, 255, 0.06);
       color: #fdf8f1;
       text-align: left;
-      padding: 14px 16px;
+      padding: 10px 12px;
       cursor: pointer;
       transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
     }}
@@ -717,96 +751,97 @@ def write_html(
     }}
     .layer-part {{
       display: block;
-      font-size: 0.72rem;
+      font-size: 0.66rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: #f3c89b;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }}
     .layer-title {{
       display: block;
       font-weight: 700;
-      font-size: 0.96rem;
-      line-height: 1.3;
+      font-size: 0.88rem;
+      line-height: 1.2;
     }}
     .card {{
       background: rgba(255, 255, 255, 0.07);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 22px;
-      padding: 18px;
+      border-radius: 18px;
+      padding: 14px;
     }}
     .card h2 {{
-      margin: 0 0 10px 0;
-      font-size: 1.05rem;
+      margin: 0 0 8px 0;
+      font-size: 1rem;
     }}
     .card p {{
       margin: 0;
       color: #e6eef1;
-      line-height: 1.5;
-      font-size: 0.95rem;
+      line-height: 1.42;
+      font-size: 0.9rem;
     }}
     .legend-title {{
-      margin-top: 16px;
+      margin-top: 12px;
       color: #f7efe3;
-      font-size: 0.82rem;
+      font-size: 0.76rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }}
     .legend {{
       display: grid;
-      gap: 10px;
-      margin-top: 12px;
+      gap: 8px;
+      margin-top: 10px;
     }}
     .legend-item {{
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       color: #f7efe3;
-      font-size: 0.92rem;
+      font-size: 0.88rem;
     }}
     .legend-swatch {{
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 5px;
       border: 1px solid rgba(255, 255, 255, 0.22);
       flex: 0 0 auto;
     }}
     .legend-note {{
-      margin-top: 14px;
+      margin-top: 10px;
       color: #d4e0e4;
       line-height: 1.45;
-      font-size: 0.88rem;
+      font-size: 0.84rem;
     }}
     .map-card {{
       background: var(--card);
-      border-radius: 28px;
+      border-radius: 24px;
       box-shadow: var(--shadow);
-      padding: 22px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       min-width: 0;
     }}
     .map-toolbar {{
       display: flex;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
       align-items: flex-start;
       flex-wrap: wrap;
     }}
     .map-toolbar h2 {{
       margin: 0;
-      font-size: 1.45rem;
+      font-size: 1.28rem;
     }}
     .map-toolbar p {{
-      margin: 6px 0 0 0;
+      margin: 4px 0 0 0;
       color: var(--muted);
-      line-height: 1.45;
+      line-height: 1.4;
       max-width: 720px;
+      font-size: 0.94rem;
     }}
     .toolbar-actions {{
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
     }}
@@ -814,7 +849,7 @@ def write_html(
       border: 1px solid var(--line);
       background: #fffdfa;
       border-radius: 999px;
-      padding: 10px 14px;
+      padding: 8px 12px;
       color: var(--ink);
       cursor: pointer;
       font: inherit;
@@ -822,13 +857,13 @@ def write_html(
     .variant-control {{
       display: none;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       border: 1px solid var(--line);
       background: #fffdfa;
       border-radius: 999px;
-      padding: 8px 14px;
+      padding: 7px 12px;
       color: var(--ink);
-      font-size: 0.94rem;
+      font-size: 0.9rem;
     }}
     .variant-control span {{
       color: var(--muted);
@@ -844,13 +879,13 @@ def write_html(
     .temporal-control {{
       display: none;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       border: 1px solid var(--line);
       background: #fffdfa;
       border-radius: 999px;
-      padding: 8px 14px;
+      padding: 7px 12px;
       color: var(--ink);
-      font-size: 0.94rem;
+      font-size: 0.9rem;
     }}
     .temporal-control span {{
       color: var(--muted);
@@ -870,12 +905,12 @@ def write_html(
       border: 1px solid var(--line);
       background: #fffdfa;
       border-radius: 999px;
-      padding: 8px 14px;
+      padding: 7px 12px;
       color: var(--ink);
-      font-size: 0.9rem;
+      font-size: 0.86rem;
     }}
     .year-control input[type="range"] {{
-      width: 180px;
+      width: 150px;
     }}
     .year-control strong {{
       min-width: 46px;
@@ -883,12 +918,12 @@ def write_html(
     }}
     .map-frame {{
       position: relative;
-      border-radius: 24px;
+      border-radius: 20px;
       overflow: hidden;
       background:
         linear-gradient(180deg, rgba(237, 233, 222, 0.95) 0%, rgba(245, 241, 232, 0.98) 100%);
       border: 1px solid #e4dccd;
-      min-height: 72vh;
+      min-height: clamp(420px, 58vh, 720px);
     }}
     svg {{
       width: 100%;
@@ -928,12 +963,21 @@ def write_html(
     }}
     .footer-note {{
       color: var(--muted);
-      font-size: 0.94rem;
-      line-height: 1.45;
+      font-size: 0.86rem;
+      line-height: 1.4;
     }}
     @media (max-width: 1120px) {{
       .shell {{ grid-template-columns: 1fr; }}
-      .map-frame {{ min-height: 58vh; }}
+      .layer-buttons {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+      .map-frame {{ min-height: clamp(360px, 50vh, 620px); }}
+    }}
+    @media (max-width: 720px) {{
+      .shell {{ padding: 12px; gap: 12px; }}
+      .sidebar {{ padding: 16px; }}
+      .layer-buttons {{ grid-template-columns: 1fr; }}
+      .map-card {{ padding: 14px; }}
+      .map-frame {{ min-height: 44vh; }}
+      .year-control input[type="range"] {{ width: 120px; }}
     }}
   </style>
 </head>
@@ -943,7 +987,7 @@ def write_html(
       <div>
         <div class="eyebrow">Presentation Build</div>
         <h1>NYC Outage Themes</h1>
-        <p class="lede">Interactive map built directly from <code>NYC_Outage_Themes.gpkg</code>. Use the layer buttons to move across the part 00 to part 10 views, hover for details, and click a tract or county to zoom in.</p>
+        <p class="lede">Interactive map built from <code>NYC_Outage_Themes.gpkg</code>. Switch parts, hover for details, and click a tract or county to zoom.</p>
       </div>
       <div class="layer-buttons" id="layerButtons"></div>
       <section class="card">
@@ -1253,7 +1297,7 @@ def write_html(
         button.type = "button";
         button.className = "layer-button";
         button.dataset.layerId = layer.id;
-        button.innerHTML = `<span class="layer-part">${{layer.part}}</span><span class="layer-title">${{layer.title}}</span>`;
+        button.innerHTML = `<span class="layer-part">${{layer.buttonPart || layer.part}}</span><span class="layer-title">${{layer.buttonTitle || layer.title}}</span>`;
         button.addEventListener("click", () => setLayer(layer.id));
         layerButtons.appendChild(button);
       }});
