@@ -217,7 +217,7 @@ def build_cluster_layer(connection: sqlite3.Connection) -> dict[str, Any]:
 
     summary = (
         f"{counts.get('Cluster 0', 0) + counts.get('Cluster 1', 0) + counts.get('Cluster 2', 0) + counts.get('Cluster 3', 0)} "
-        f"tracts are assigned to four seasonality clusters, with {counts.get('No cluster', 0)} tracts left unclassified."
+        f"tracts are assigned to four seasonality clusters, with {counts.get('No cluster', 0)} tracts left unclassified. To be clear, the boroughs ended up cleanly organizing into different clusters."
     )
     return add_legend_meta(
         {
@@ -294,7 +294,7 @@ def build_cvi_layer(connection: sqlite3.Connection) -> dict[str, Any]:
             "part": "Part 07",
             "title": "Overall Climate Vulnerability Index",
             "description": "Tract-level choropleth for the overall CVI score, highlighting the structural vulnerability landscape.",
-            "summary": f"Overall CVI ranges from {min(values):.3f} to {max(values):.3f} across {len(rows):,} tracts.",
+            "summary": f"Overall CVI ranges from {min(values):.3f} to {max(values):.3f} across {len(rows):,} tracts. While there are certainly some areas that are particularly vulnerable, and others that are much less, CVI seems to be almost evenly distributed across the city.",
             "group": "tracts",
             "legend": legend,
             "styles": styles,
@@ -357,7 +357,7 @@ def build_priority_layer(connection: sqlite3.Connection) -> dict[str, Any]:
             "part": "Part 07",
             "title": "Priority Overlap: Vulnerability + Outage Burden",
             "description": "Rule-based priority map highlighting tracts where high vulnerability overlaps with elevated outage burden.",
-            "summary": f"{counts.get('Priority tract', 0)} tracts are flagged as overlap priorities where vulnerability and outage burden are jointly elevated.",
+            "summary": f"{counts.get('Priority tract', 0)} tracts are flagged as overlap priorities where vulnerability and outage burden are jointly elevated. These areas would require the most attention going forward.",
             "group": "tracts",
             "legend": base.discrete_legend(counts, color_map, ["Priority tract", "Not flagged", "No data"]),
             "styles": styles,
