@@ -190,6 +190,18 @@
       cursor: pointer;
       font: inherit;
     }
+    .toolbar-actions a {
+      border: 1px solid var(--line);
+      background: #fffdfa;
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
     .variant-control {
       display: none;
       align-items: center;
@@ -341,6 +353,7 @@
           <p id="mapDescription"></p>
         </div>
         <div class="toolbar-actions">
+          <a href="./industry-brief.html">Industry Brief</a>
           <label class="variant-control" id="variantControl">
             <span>Significance</span>
             <select id="variantSelect" aria-label="Select significance level"></select>
