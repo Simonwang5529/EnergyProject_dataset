@@ -251,6 +251,35 @@
       max-width: 11ch;
     }
 
+    .hero-title {
+      position: relative;
+      display: inline-block;
+      color: transparent;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.34) 48%, rgba(255, 255, 255, 0.12) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.16);
+      text-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .hero-title::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      color: transparent;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.04));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.08);
+      opacity: 0.72;
+      transform: translateY(6px) scale(1.01);
+      filter: blur(12px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
     .hero-copy p {
       margin: 0;
       max-width: 60ch;
@@ -689,13 +718,20 @@
 
     .reveal {
       opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 700ms ease, transform 700ms ease;
+      filter: blur(10px);
+      transform: translate3d(0, 42px, 0) scale(0.985);
+      transition:
+        opacity 1150ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 1150ms cubic-bezier(0.22, 1, 0.36, 1),
+        filter 900ms cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: var(--reveal-delay, 0ms);
+      will-change: opacity, transform, filter;
     }
 
     .reveal.in-view {
       opacity: 1;
-      transform: translateY(0);
+      filter: blur(0);
+      transform: translate3d(0, 0, 0) scale(1);
     }
 
     .modal {
@@ -825,6 +861,24 @@
         max-width: 100%;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .hero::after {
+        animation: none;
+      }
+
+      .reveal,
+      .reveal.in-view {
+        opacity: 1;
+        filter: none;
+        transform: none;
+        transition: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -849,7 +903,7 @@
     <section class="hero reveal">
       <div class="hero-copy">
         <div class="kicker">Industry web summary</div>
-        <h1>Outage and Climate Vulnerability</h1>
+        <h1 class="hero-title" data-text="Outage and Climate Vulnerability">Outage and Climate Vulnerability</h1>
         <p>
           This version reframes the notebook findings as an executive web brief: what changed across 2014-2023,
           where severe weather is most tied to outage occurrence, and which borough patterns should guide resilience investment,
@@ -1527,6 +1581,11 @@
     }
 
     function setupReveal() {
+      const reveals = Array.from(document.querySelectorAll(".reveal"));
+      reveals.forEach((node, index) => {
+        node.style.setProperty("--reveal-delay", `${Math.min(index * 90, 420)}ms`);
+      });
+
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -1536,7 +1595,7 @@
         });
       }, { threshold: 0.12 });
 
-      document.querySelectorAll(".reveal").forEach(node => observer.observe(node));
+      reveals.forEach(node => observer.observe(node));
     }
 
     function drawAllCharts() {
