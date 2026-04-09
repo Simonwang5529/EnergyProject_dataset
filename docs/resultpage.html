@@ -328,49 +328,42 @@
       border-radius: 32px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background:
-        radial-gradient(circle at 56% 44%, rgba(101, 208, 204, 0.16), transparent 0 10%, rgba(101, 208, 204, 0.02) 12%, transparent 20%),
-        repeating-radial-gradient(circle at 56% 44%, rgba(255, 244, 223, 0.16) 0 1px, transparent 1px 76px),
+        radial-gradient(circle at 64% 78%, rgba(241, 168, 91, 0.18), transparent 34%),
         linear-gradient(150deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01));
       overflow: hidden;
       opacity: 0.86;
     }
 
-    .hero-visual::before,
-    .hero-visual::after {
+    .hero-visual::before {
       content: "";
       position: absolute;
-      border-radius: 999px;
+      inset: 24px;
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(5, 15, 18, 0.08), rgba(5, 15, 18, 0.72)),
+        url("assets/maps/tract_priority_bivariate.png") center / cover no-repeat;
+      filter: saturate(0.76) contrast(0.86) brightness(0.78);
+      transform: rotate(-2.4deg) scale(1.04);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.34);
+      opacity: 0.86;
       pointer-events: none;
     }
 
-    .hero-visual::before {
-      width: 360px;
-      height: 360px;
-      right: -86px;
-      top: 56px;
-      border: 1px solid rgba(255, 215, 171, 0.26);
-      box-shadow:
-        0 0 0 72px rgba(241, 168, 91, 0.025),
-        0 0 92px rgba(101, 208, 204, 0.1);
-    }
-
     .hero-visual::after {
-      width: 12px;
-      height: 12px;
-      right: 158px;
-      top: 230px;
-      background: var(--teal);
-      box-shadow:
-        -132px -94px 0 2px rgba(241, 168, 91, 0.82),
-        -70px 138px 0 0 rgba(255, 215, 171, 0.78),
-        76px -28px 0 3px rgba(101, 208, 204, 0.55),
-        0 0 28px rgba(101, 208, 204, 0.85);
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(8, 19, 23, 0.72), transparent 44%),
+        radial-gradient(circle at 72% 82%, rgba(255, 215, 171, 0.35), transparent 22%);
+      pointer-events: none;
     }
 
     .hero-visual-label {
       position: absolute;
       right: 24px;
       bottom: 24px;
+      z-index: 1;
       display: grid;
       gap: 6px;
       color: rgba(248, 241, 230, 0.72);
@@ -383,6 +376,22 @@
       color: var(--accent-soft);
       font-size: 1rem;
       letter-spacing: 0.08em;
+    }
+
+    .hero-visual-badge {
+      position: absolute;
+      left: 24px;
+      top: 24px;
+      z-index: 1;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(8, 19, 23, 0.62);
+      color: rgba(248, 241, 230, 0.76);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      backdrop-filter: blur(14px);
     }
 
     .hero-copy p {
@@ -1143,9 +1152,10 @@
         </div>
       </div>
       <div class="hero-visual" aria-hidden="true">
+        <div class="hero-visual-badge">Map preview</div>
         <div class="hero-visual-label">
-          <span>NYC grid signals</span>
-          <strong>2014-2023</strong>
+          <span>Visual texture</span>
+          <strong>Priority overlay</strong>
         </div>
       </div>
     </section>
