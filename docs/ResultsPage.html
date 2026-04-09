@@ -254,30 +254,24 @@
     .hero-title {
       position: relative;
       display: inline-block;
-      color: transparent;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.34) 48%, rgba(255, 255, 255, 0.12) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.16);
-      text-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+      color: #fff7eb;
+      text-shadow:
+        0 10px 32px rgba(0, 0, 0, 0.24),
+        0 0 24px rgba(241, 168, 91, 0.14);
     }
 
     .hero-title::after {
-      content: attr(data-text);
+      content: "";
       position: absolute;
-      inset: 0;
-      color: transparent;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.04));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.08);
-      opacity: 0.72;
-      transform: translateY(6px) scale(1.01);
-      filter: blur(12px);
+      left: 0.08em;
+      right: 0.08em;
+      bottom: -0.12em;
+      height: 0.18em;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(241, 168, 91, 0.92), rgba(101, 208, 204, 0.78));
+      opacity: 0.95;
+      box-shadow: 0 8px 24px rgba(101, 208, 204, 0.18);
       pointer-events: none;
-      z-index: -1;
     }
 
     .hero-copy p {
