@@ -359,41 +359,6 @@
       pointer-events: none;
     }
 
-    .hero-visual-label {
-      position: absolute;
-      right: 24px;
-      bottom: 24px;
-      z-index: 1;
-      display: grid;
-      gap: 6px;
-      color: rgba(248, 241, 230, 0.72);
-      font-size: 0.8rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .hero-visual-label strong {
-      color: var(--accent-soft);
-      font-size: 1rem;
-      letter-spacing: 0.08em;
-    }
-
-    .hero-visual-badge {
-      position: absolute;
-      left: 24px;
-      top: 24px;
-      z-index: 1;
-      padding: 9px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(8, 19, 23, 0.62);
-      color: rgba(248, 241, 230, 0.76);
-      font-size: 0.72rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      backdrop-filter: blur(14px);
-    }
-
     .hero-copy p {
       margin: 0;
       max-width: 46ch;
@@ -1151,13 +1116,7 @@
           <a class="button" href="./">Open Published Interactive Map</a>
         </div>
       </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="hero-visual-badge">Map preview</div>
-        <div class="hero-visual-label">
-          <span>Visual texture</span>
-          <strong>Priority overlay</strong>
-        </div>
-      </div>
+      <div class="hero-visual" aria-hidden="true"></div>
     </section>
 
     <section class="section reveal page-section hero-followup" data-view="executive">
