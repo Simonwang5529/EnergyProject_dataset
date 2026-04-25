@@ -1,31 +1,37 @@
-# EnergyProject_dataset
+# NYC Power Outage Vulnerability Analysis
 
-Dataset repository for the NYC CVI + outage integration work.
+Columbia University Data Science Institute — NYC CVI + Outage Integration Project.
 
-## Quick intro
+**Research question:** Does community vulnerability (CVI) predict worse outage frequency and duration across NYC counties (2014–2023)?
 
-This repo includes raw outage/CVI sources and cleaned outputs.
-The latest severe-weather-only outputs are in `generated_data/`:
-- `SW_Outage.csv`: Severe-weather-related outage records (all available regions/years in the source set).
-- `SW_Outage_NYC.csv`: NYC-only subset of severe-weather-related outage records.
+**Main finding:** The resilience channel (duration) is a stronger and more consistent vulnerability signal than the frequency channel. Higher social-economic CVI counties experience longer outages — especially in the upper tail (p90, share >24h) — across OLS, GEE, and Ridge specifications.
 
-## Folder structure
+## Notebooks
 
-- `raw_data/`
-  - `Master CVI Dataset - Oct 2023.xlsx`
-  - `Outage_Dataset/` (original outage CSV/DOCX files)
+- `notebooks/EDA_Outage_enhanced.ipynb` — Full 12-part EDA: descriptive analysis, data-structure diagnostics, county-year CVI models, duration models, robustness summary, mechanism interpretation.
+- `notebooks/clean_electricity_low_income_nyc_outage_analysis.ipynb` — Policy-alignment analysis: 2025 Clean Electricity low-income eligibility vs. 2014–2023 historical outage burden.
 
-- `generated_data/`
-  - `Outage_CVI_Events.csv`
-    - Event-level merged dataset (CVI + outage records, 2014-2023 NYC).
-  - `Tract_CVI_Event_Counts_2014_2023.csv`
-    - No-event-detail version (one row per tract, yearly and total outage event counts).
-  - `County_Event_Counts_2014_2023.csv`
-    - County-level outage event count summary.
-  - `SW_Outage.csv`
-    - Severe-weather-related outage records.
-  - `SW_Outage_NYC.csv`
-    - NYC-only severe-weather-related outage records.
+## Reports & Docs
+
+- `docs/EDA_Outage_Report.docx` — Five-page methods and results summary.
+- `docs/EDA_Outage_Report.md` — Markdown version of the report.
+- `docs/Clean_Electricity_Policy_Alignment_Summary.docx` — Policy framing note for the Clean Electricity dataset.
+- `docs/index.html` / `docs/industry-brief.html` — Web-facing summaries.
+
+## Calculated Outputs
+
+- `EDA_Outage_Calculated_CSVs/` — Part-by-part model outputs (tract trends, county-year panels, CVI model summaries, duration models).
+
+## Data
+
+- `raw_data/` — Source datasets (Master CVI Dataset, Outage_Dataset/).
+- `generated_data/` — Merged and cleaned outputs (Outage_CVI_Events.csv, SW_Outage_NYC.csv, etc.).
+
+## Key Limitations
+
+- County-year models rest on N≈50 (5 counties × 10 years). P-values are descriptive approximations.
+- Outage measures are county-uniform in the source data — tract-level CVI inference is not supported.
+- Ridge alpha=0.5 (Parts 9b/10b) not cross-validated; pending LOO-CV before paper submission.
 
 ## Notes
 

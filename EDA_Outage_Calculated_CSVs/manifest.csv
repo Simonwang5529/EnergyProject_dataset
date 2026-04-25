@@ -33,9 +33,12 @@ part_07,coef_summary.csv
 part_08,county_year_consistency.csv
 part_08,county_year.csv
 part_08,county_year_balanced.csv
+part_08,county_month.csv
+part_08,county_month_balanced.csv
 part_08,county_cvi_summary.csv
 part_08,high_cvi_share.csv
 part_08,county_panel.csv
+part_08,county_month_panel.csv
 part_08,county_predictor_view.csv
 part_08,county_predictor_corr.csv
 part_08,county_ols_summary.csv

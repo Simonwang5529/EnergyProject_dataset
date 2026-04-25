@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NYC Outage Resilience Brief</title>
+  <style>
+    :root {
+      --bg: #091317;
+      --bg-soft: #122329;
+      --panel: rgba(14, 29, 35, 0.84);
+      --panel-strong: rgba(8, 20, 24, 0.94);
+      --card: rgba(244, 236, 219, 0.08);
+      --card-strong: rgba(255, 249, 239, 0.1);
+      --line: rgba(255, 244, 223, 0.12);
+      --line-strong: rgba(255, 220, 164, 0.22);
+      --text: #f8f1e6;
+      --muted: #b8c6c8;
+      --muted-strong: #dae5e6;
+      --accent: #f1a85b;
+      --accent-soft: #ffd7ab;
+      --teal: #65d0cc;
+      --teal-deep: #1f8e96;
+      --coral: #ef7b63;
+      --berry: #c15f77;
+      --gold: #e5c26a;
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.33);
+      --radius-xl: 34px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max: 1240px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Avenir Next", "Gill Sans", "Trebuchet MS", sans-serif;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(101, 208, 204, 0.16), transparent 26%),
+        radial-gradient(circle at 88% 15%, rgba(239, 123, 99, 0.18), transparent 24%),
+        radial-gradient(circle at 50% 45%, rgba(241, 168, 91, 0.08), transparent 34%),
+        linear-gradient(180deg, #071015 0%, var(--bg) 38%, #101e24 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body::before {
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.35));
+    }
+
+    body::after {
+      background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.05), transparent 60%);
+      mix-blend-mode: screen;
+      opacity: 0.35;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .site-shell {
+      width: min(calc(100% - 28px), var(--max));
+      margin: 0 auto;
+      padding: 18px 0 54px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 12px;
+      z-index: 30;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding: 14px 18px;
+      background: rgba(9, 19, 23, 0.66);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 14px 48px rgba(0, 0, 0, 0.24);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, rgba(241, 168, 91, 0.95), rgba(101, 208, 204, 0.92));
+      display: grid;
+      place-items: center;
+      color: #092127;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      font-size: 0.88rem;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0;
+      font-size: 0.74rem;
+      line-height: 1;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+    }
+
+    .brand-title {
+      margin: 4px 0 0;
+      font-size: 0.95rem;
+      color: var(--muted-strong);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav a {
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--muted);
+      transition: transform 180ms ease, border-color 180ms ease, color 180ms ease, background 180ms ease;
+    }
+
+    .nav a:hover {
+      transform: translateY(-1px);
+      color: var(--text);
+      border-color: var(--line-strong);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav .cta {
+      color: #0c1f24;
+      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 22px;
+      padding: 28px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(17, 35, 41, 0.96), rgba(9, 20, 24, 0.84)),
+        radial-gradient(circle at top right, rgba(241, 168, 91, 0.12), transparent 26%);
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -100px -120px auto;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255, 214, 158, 0.7), rgba(241, 168, 91, 0.14) 34%, transparent 62%);
+      opacity: 0.7;
+      filter: blur(14px);
+      z-index: -1;
+      animation: floatPulse 10s ease-in-out infinite;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--accent-soft);
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .kicker::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 14px rgba(101, 208, 204, 0.8);
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      margin: 18px 0 16px;
+      font-size: clamp(3rem, 7vw, 5.7rem);
+      line-height: 0.95;
+      max-width: 11ch;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      max-width: 60ch;
+      color: var(--muted-strong);
+      font-size: 1.05rem;
+      line-height: 1.68;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 1px solid var(--line-strong);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-weight: 700;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .button.primary {
+      color: #0b2024;
+      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+      border-color: transparent;
+    }
+
+    .hero-panel {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .panel-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.03));
+      backdrop-filter: blur(12px);
+    }
+
+    .panel-card h2 {
+      margin: 0 0 10px;
+      font-size: 1.18rem;
+    }
+
+    .signal-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .signal-item {
+      display: grid;
+      gap: 2px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .signal-item strong {
+      color: var(--accent-soft);
+      font-size: 1.04rem;
+    }
+
+    .signal-item span {
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.92rem;
+    }
+
+    .mini-boroughs {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .mini-borough {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted-strong);
+    }
+
+    .mini-borough:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .mini-borough span:last-child {
+      color: var(--accent-soft);
+      font-weight: 700;
+    }
+
+    .metric-band {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .metric-card {
+      position: relative;
+      overflow: hidden;
+      padding: 18px 18px 20px;
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.03));
+      border: 1px solid var(--line);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .metric-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--teal));
+      opacity: 0.95;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      margin-top: 14px;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .metric-note {
+      margin-top: 10px;
+      color: var(--muted-strong);
+      line-height: 1.5;
+      font-size: 0.94rem;
+    }
+
+    .section {
+      margin-top: 18px;
+      padding: 26px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(16, 31, 37, 0.92), rgba(10, 22, 27, 0.88));
+      box-shadow: var(--shadow);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+
+    .section-head p {
+      margin: 0;
+      max-width: 58ch;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.62;
+    }
+
+    .chart-card svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin-top: 18px;
+    }
+
+    .subgrid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.045);
+      color: var(--muted-strong);
+      font-size: 0.92rem;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .summary-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .summary-card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--accent-soft);
+      font-size: 1.08rem;
+    }
+
+    .summary-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .model-notes {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .model-note {
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .model-note strong {
+      display: inline-block;
+      margin-bottom: 6px;
+      color: var(--accent-soft);
+    }
+
+    .borough-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+    }
+
+    .borough-cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .borough-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .borough-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+    }
+
+    .borough-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.58;
+    }
+
+    .borough-tag {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(101, 208, 204, 0.12);
+      color: #abf3ef;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .map-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 260px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.045);
+      cursor: pointer;
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+    }
+
+    .map-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--line-strong);
+      box-shadow: 0 24px 56px rgba(0, 0, 0, 0.28);
+    }
+
+    .map-card.large {
+      grid-column: span 7;
+    }
+
+    .map-card.medium {
+      grid-column: span 5;
+    }
+
+    .map-card.small {
+      grid-column: span 4;
+    }
+
+    .map-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.96) contrast(1.02);
+    }
+
+    .map-overlay {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 18px;
+      background: linear-gradient(180deg, transparent 0%, rgba(3, 10, 12, 0.84) 52%, rgba(3, 10, 12, 0.95) 100%);
+    }
+
+    .map-overlay h3 {
+      margin: 0 0 6px;
+      font-size: 1.26rem;
+    }
+
+    .map-overlay p {
+      margin: 0;
+      color: #dbe6e7;
+      line-height: 1.55;
+      font-size: 0.93rem;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .insight-card {
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+    }
+
+    .insight-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.25rem;
+    }
+
+    .insight-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.62;
+    }
+
+    .footer {
+      margin-top: 18px;
+      padding: 18px 22px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .footer strong {
+      color: var(--muted-strong);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+
+    .reveal.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 22px;
+      background: rgba(2, 8, 10, 0.9);
+      z-index: 50;
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .modal-card {
+      width: min(1120px, 100%);
+      max-height: calc(100vh - 44px);
+      overflow: auto;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: #081317;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-card img {
+      width: 100%;
+      display: block;
+    }
+
+    .modal-copy {
+      padding: 18px;
+    }
+
+    .modal-copy h3 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+    }
+
+    .modal-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.62;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .source-link {
+      color: var(--accent-soft);
+      text-decoration: none;
+    }
+
+    .source-link:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes floatPulse {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-18px) scale(1.03); }
+    }
+
+    @media (max-width: 1120px) {
+      .metric-band,
+      .insight-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .chart-grid,
+      .borough-layout,
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .map-card.large,
+      .map-card.medium,
+      .map-card.small {
+        grid-column: span 6;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .site-shell {
+        width: min(calc(100% - 20px), var(--max));
+      }
+
+      .topbar {
+        position: static;
+        border-radius: 28px;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+
+      .metric-band,
+      .summary-grid,
+      .borough-cards,
+      .insight-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .map-card.large,
+      .map-card.medium,
+      .map-card.small {
+        grid-column: span 12;
+      }
+
+      .section,
+      .hero {
+        padding: 20px;
+      }
+
+      h1 {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="site-shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">NY</div>
+        <div class="brand-copy">
+          <p class="eyebrow">Energy Resilience Brief</p>
+          <p class="brand-title">NYC outage patterns, vulnerability concentration, and spatial priorities</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Page sections">
+        <a href="#timeline">Trends</a>
+        <a href="#models">Models</a>
+        <a href="#boroughs">Boroughs</a>
+        <a href="#maps">Maps</a>
+        <a class="cta" href="./">Open Interactive Map</a>
+      </nav>
+    </div>
+
+    <section class="hero reveal">
+      <div class="hero-copy">
+        <div class="kicker">Industry web summary</div>
+        <h1>Outage and Climate Vulnerability</h1>
+        <p>
+          This version reframes the notebook findings as an executive web brief: what changed across 2014-2023,
+          where severe weather is most tied to outage occurrence, and which borough patterns should guide resilience investment,
+          grid hardening, and customer protection planning.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#maps">See Spatial Story</a>
+          <a class="button" href="./">Open Published Interactive Map</a>
+        </div>
+      </div>
+
+      <div class="hero-panel">
+        <div class="panel-card">
+          <h2>Executive signal</h2>
+          <div class="signal-list">
+            <div class="signal-item">
+              <strong>Occurrence is the strongest vulnerability signal.</strong>
+              <span>The best tract-level occurrence model reaches R² = 0.684, while duration models remain far weaker.</span>
+            </div>
+            <div class="signal-item">
+              <strong>Severe weather changes frequency more than tract duration.</strong>
+              <span>1,008 of 2,168 tracts show a significant severe-weather relationship for occurrence, but none for duration at 5%.</span>
+            </div>
+            <div class="signal-item">
+              <strong>Bronx is the clearest vulnerability concentration.</strong>
+              <span>It has the highest mean overall CVI and 74.3% of tracts in the high-CVI band.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h2>Borough flash read</h2>
+          <div class="mini-boroughs">
+            <div class="mini-borough"><span>Bronx</span><span>highest social-economic CVI</span></div>
+            <div class="mini-borough"><span>Queens</span><span>highest county-year occurrence in 2022</span></div>
+            <div class="mini-borough"><span>Staten Island</span><span>highest climate-extreme CVI mean</span></div>
+            <div class="mini-borough"><span>2020</span><span>longest outage stress year</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="metric-band reveal" aria-label="Key metrics">
+      <article class="metric-card">
+        <div class="metric-label">Records analyzed</div>
+        <div class="metric-value">3.20M</div>
+        <div class="metric-note">Integrated outage records across NYC from 2014 through 2023.</div>
+      </article>
+      <article class="metric-card">
+        <div class="metric-label">Peak outage year</div>
+        <div class="metric-value">2018</div>
+        <div class="metric-note">667,269 outages, with severe-weather events accounting for 32.3% of the total.</div>
+      </article>
+      <article class="metric-card">
+        <div class="metric-label">Peak duration stress</div>
+        <div class="metric-value">2020</div>
+        <div class="metric-note">Average duration hit 7.98 hours, with P90 duration at 9.34 hours.</div>
+      </article>
+      <article class="metric-card">
+        <div class="metric-label">Tracts with weather-occurrence signal</div>
+        <div class="metric-value">46.5%</div>
+        <div class="metric-note">1,008 of 2,168 tracts show significant severe-weather association with outage occurrence at 5%.</div>
+      </article>
+      <article class="metric-card">
+        <div class="metric-label">Best county fit</div>
+        <div class="metric-value">0.412</div>
+        <div class="metric-note">Adjusted R² for the extended county occurrence model using weather and CVI structure.</div>
+      </article>
+    </section>
+
+    <section class="section reveal" id="timeline">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Trend View</p>
+          <h2>System pressure over time</h2>
+        </div>
+        <p>
+          The time-series pattern is not a simple straight line. 2018 is the scale shock, 2020 is the duration shock,
+          and 2023 cools from the 2022 spike but still ends well above the earliest years in the panel.
+        </p>
+      </div>
+
+      <div class="chart-grid">
+        <article class="card chart-card">
+          <h3>Annual outage scale and severe-weather share</h3>
+          <p>
+            Bars show total annual outage records. The line shows the share tagged as severe weather.
+            The 2018 surge stands out as both a volume event and a storm-driven year.
+          </p>
+          <div id="annual-chart"></div>
+        </article>
+
+        <div class="subgrid">
+          <article class="card chart-card">
+            <h3>Duration stress and long-outage exposure</h3>
+            <p>
+              P90 duration and the share of outages above 8 hours peak in 2020, indicating that the hardest year
+              operationally is not the same as the biggest year by count.
+            </p>
+            <div id="duration-chart"></div>
+          </article>
+
+          <article class="card">
+            <h3>Monthly flashpoints by year</h3>
+            <p>
+              Every year in the panel shows at least one statistically notable month. The signal migrates between spring,
+              summer, and fall, which argues for seasonal preparedness instead of one single “storm season” assumption.
+            </p>
+            <div class="pill-row" id="month-pills"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="models">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Model Summary</p>
+          <h2>What the results say</h2>
+        </div>
+        <p>
+          Across tract- and county-level models, outage occurrence responds much more clearly to weather and vulnerability
+          than outage duration does. Social-economic vulnerability is the most consistent CVI signal for counts.
+        </p>
+      </div>
+
+      <div class="chart-grid">
+        <article class="card chart-card">
+          <h3>County occurrence lift in the extended Poisson model</h3>
+          <p>
+            Incident rate ratios show the relative lift associated with each standardized predictor in the county count model.
+            Values above 1.0 indicate higher expected outage occurrence.
+          </p>
+          <div id="irr-chart"></div>
+        </article>
+
+        <div class="subgrid">
+          <article class="card">
+            <h3>Three takeaways from the regression stack</h3>
+            <div class="model-notes">
+              <div class="model-note">
+                <strong>Occurrence models carry the signal.</strong>
+                Best tract occurrence fit reaches R² = 0.684, versus roughly 0.02 for tract log-duration models.
+              </div>
+              <div class="model-note">
+                <strong>Storm intensity drives duration more than CVI.</strong>
+                In county duration models, severe-weather terms are significant while CVI terms are not.
+              </div>
+              <div class="model-note">
+                <strong>Social-economic CVI is the most actionable vulnerability dimension.</strong>
+                The clean county Poisson model shows IRR = 1.182 for social-economic CVI, stronger than overall CVI.
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>Evidence strip</h3>
+            <div class="summary-grid">
+              <div class="summary-card">
+                <strong>R² = 0.684</strong>
+                <p>Best tract occurrence model with nonlinear CVI and weather interaction.</p>
+              </div>
+              <div class="summary-card">
+                <strong>Adj. R² = 0.412</strong>
+                <p>Extended county occurrence model using year, severe weather, and CVI structure.</p>
+              </div>
+              <div class="summary-card">
+                <strong>0 tracts</strong>
+                <p>show significant severe-weather linkage to tract-level duration at 5%.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="boroughs">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Borough View</p>
+          <h2>Exposure is not evenly distributed</h2>
+        </div>
+        <p>
+          The borough profile shows two different risk stories. The Bronx concentrates social vulnerability, while Staten Island
+          carries the highest climate-extreme mean. Queens stands out operationally on raw occurrence volume.
+        </p>
+      </div>
+
+      <div class="borough-layout">
+        <article class="card chart-card">
+          <h3>Overall CVI vs. high-CVI tract share</h3>
+          <p>
+            The Bronx separates from the rest of the city on both average vulnerability and concentration of high-vulnerability tracts.
+          </p>
+          <div id="borough-chart"></div>
+        </article>
+
+        <div class="borough-cards">
+          <article class="borough-card">
+            <h3>Bronx</h3>
+            <p>Highest mean overall CVI at 0.551, highest social-economic CVI mean at 0.761, and 74.3% of tracts in the high-CVI group.</p>
+            <div class="borough-tag">Vulnerability concentration</div>
+          </article>
+          <article class="borough-card">
+            <h3>Queens</h3>
+            <p>Recorded the single highest county-year outage occurrence in the panel: 305 in 2022, despite a low high-CVI tract share.</p>
+            <div class="borough-tag">Operational volume hotspot</div>
+          </article>
+          <article class="borough-card">
+            <h3>Staten Island</h3>
+            <p>Highest climate extreme-events CVI mean at 0.537 and the longest county-year mean duration: 16.2 hours in 2020.</p>
+            <div class="borough-tag">Climate duration stress</div>
+          </article>
+          <article class="borough-card">
+            <h3>Manhattan and Brooklyn</h3>
+            <p>Less concentrated on high-CVI share than the Bronx, but still material for resilience planning because outage frequency remains elevated.</p>
+            <div class="borough-tag">Network balancing zone</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="maps">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Spatial Story</p>
+          <h2>Maps built for the pitch</h2>
+        </div>
+        <p>
+          These map frames translate the notebook into a visual atlas. Click any frame to enlarge it, or open the interactive map for borough-by-borough detail.
+        </p>
+      </div>
+
+      <div class="map-grid" id="map-grid">
+        <article class="map-card large" data-title="Priority overlay" data-description="Bivariate priority map combining outage occurrence and climate vulnerability. This is the clearest single frame for showing where investment urgency is highest." data-image="assets/maps/tract_priority_bivariate.png">
+          <img src="assets/maps/tract_priority_bivariate.png" alt="Priority bivariate map">
+          <div class="map-overlay">
+            <h3>Priority overlay</h3>
+            <p>Outage occurrence crossed with CVI for a direct visual shortlist of where resilience spending matters most.</p>
+          </div>
+        </article>
+
+        <article class="map-card medium" data-title="Significant trend slopes" data-description="Tract-level map of significant occurrence trend slopes. Useful for separating places that are persistently exposed from places that are newly accelerating." data-image="assets/maps/tract_occurrence_trend_significance.png">
+          <img src="assets/maps/tract_occurrence_trend_significance.png" alt="Occurrence trend significance map">
+          <div class="map-overlay">
+            <h3>Significant trend slopes</h3>
+            <p>Shows where occurrence trends are statistically notable rather than merely noisy.</p>
+          </div>
+        </article>
+
+        <article class="map-card small" data-title="Overall CVI terrain" data-description="Baseline climate-vulnerability surface across NYC tracts. Use this as the context layer behind every operational conversation." data-image="assets/maps/tract_cvi_overall.png">
+          <img src="assets/maps/tract_cvi_overall.png" alt="Overall CVI map">
+          <div class="map-overlay">
+            <h3>Overall CVI terrain</h3>
+            <p>The base vulnerability landscape behind the outage patterns.</p>
+          </div>
+        </article>
+
+        <article class="map-card small" data-title="Seasonality clusters" data-description="Clustered tract signatures for monthly outage seasonality. The point is not the cluster ID itself, but that local rhythm is stable enough to classify." data-image="assets/maps/tract_cluster_map.png">
+          <img src="assets/maps/tract_cluster_map.png" alt="Seasonality cluster map">
+          <div class="map-overlay">
+            <h3>Seasonality clusters</h3>
+            <p>Distinct neighborhood signatures suggest tailored seasonal readiness strategies.</p>
+          </div>
+        </article>
+
+        <article class="map-card medium" data-title="2023 county duration risk" data-description="County-level duration risk view for the latest year in the panel. It complements the count-focused maps with an operations lens." data-image="assets/maps/county_duration_risk_2023.png">
+          <img src="assets/maps/county_duration_risk_2023.png" alt="County duration risk map">
+          <div class="map-overlay">
+            <h3>2023 county duration risk</h3>
+            <p>A clean frame for talking about restoration burden, not just event frequency.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Industry Readout</p>
+          <h2>What this means for decision-makers</h2>
+        </div>
+        <p>
+          The data supports a more targeted resilience story: combine vulnerability concentration, storm sensitivity, and duration burden rather than relying on any one map alone.
+        </p>
+      </div>
+
+      <div class="insight-grid">
+        <article class="insight-card">
+          <h3>Target grid hardening where occurrence and CVI overlap</h3>
+          <p>The priority overlay is the strongest investment-facing graphic because it collapses frequency and vulnerability into one decision surface.</p>
+        </article>
+        <article class="insight-card">
+          <h3>Plan duration response as a weather operations problem</h3>
+          <p>The duration models point much more to severe weather and customer scale than to tract CVI, so staffing and restoration readiness matter.</p>
+        </article>
+        <article class="insight-card">
+          <h3>Use borough-specific strategies, not one citywide template</h3>
+          <p>The Bronx, Queens, and Staten Island tell different stories. Vulnerability concentration, raw occurrence, and duration stress are not aligned in one place.</p>
+        </article>
+        <article class="insight-card">
+          <h3>Keep the seasonal lens open year-round</h3>
+          <p>Every year shows a statistically notable month, but those months shift. Preparedness should follow observed local rhythm, not a fixed calendar assumption.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer reveal">
+      <strong>Sources used in this presentation:</strong>
+      `EDA_Outage_Calculated_CSVs/part_00_foundation/year_simple.csv`,
+      `EDA_Outage_Calculated_CSVs/part_04/sig_summary.csv`,
+      `EDA_Outage_Calculated_CSVs/part_07/part7_model_summary.csv`,
+      `EDA_Outage_Calculated_CSVs/part_08/county_ols_summary.csv`,
+      `EDA_Outage_Calculated_CSVs/part_08/county_poisson_coef.csv`,
+      `EDA_Outage_Calculated_CSVs/part_08/county_cvi_summary.csv`,
+      `EDA_Outage_Calculated_CSVs/part_08/high_cvi_share.csv`,
+      `EDA_Outage_Calculated_CSVs/part_10/duration_year.csv`,
+      plus the rendered map assets in `docs/assets/maps/`.
+      For interactive exploration, open
+      <a class="source-link" href="./">the live interactive map</a>.
+    </footer>
+  </main>
+
+  <div class="modal" id="map-modal" aria-hidden="true">
+    <button class="modal-close" id="modal-close" aria-label="Close enlarged map">&times;</button>
+    <div class="modal-card">
+      <img id="modal-image" alt="">
+      <div class="modal-copy">
+        <h3 id="modal-title"></h3>
+        <p id="modal-description"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const yearly = [
+      { year: 2014, total: 17171, stormShare: 0.0 },
+      { year: 2015, total: 280690, stormShare: 0.0 },
+      { year: 2016, total: 296277, stormShare: 0.0 },
+      { year: 2017, total: 227010, stormShare: 0.007 },
+      { year: 2018, total: 667269, stormShare: 0.323 },
+      { year: 2019, total: 306579, stormShare: 0.174 },
+      { year: 2020, total: 274108, stormShare: 0.109 },
+      { year: 2021, total: 319416, stormShare: 0.001 },
+      { year: 2022, total: 587220, stormShare: 0.2 },
+      { year: 2023, total: 225135, stormShare: 0.013 }
+    ];
+
+    const durationSeries = [
+      { year: 2014, p90: 2.1375, longShare: 0.0179 },
+      { year: 2015, p90: 8.565, longShare: 0.0869 },
+      { year: 2016, p90: 6.495, longShare: 0.0903 },
+      { year: 2017, p90: 6.59, longShare: 0.0735 },
+      { year: 2018, p90: 6.625, longShare: 0.0641 },
+      { year: 2019, p90: 5.735, longShare: 0.0517 },
+      { year: 2020, p90: 9.34, longShare: 0.1397 },
+      { year: 2021, p90: 8.22, longShare: 0.1159 },
+      { year: 2022, p90: 4.965, longShare: 0.0496 },
+      { year: 2023, p90: 5.31, longShare: 0.0573 }
+    ];
+
+    const irrSeries = [
+      { label: "Year trend", value: 1.091, detail: "+9.1% expected count lift" },
+      { label: "Severe weather count", value: 1.104, detail: "+10.4% per SD increase" },
+      { label: "Climate-extreme CVI", value: 1.541, detail: "+54.1% expected count lift" },
+      { label: "Social-economic CVI", value: 6.736, detail: "strongest positive CVI signal" }
+    ];
+
+    const boroughs = [
+      { name: "Bronx", overall: 0.551, highShare: 0.743 },
+      { name: "Brooklyn", overall: 0.508, highShare: 0.252 },
+      { name: "Manhattan", overall: 0.446, highShare: 0.09 },
+      { name: "Queens", overall: 0.483, highShare: 0.078 },
+      { name: "Staten Island", overall: 0.494, highShare: 0.18 }
+    ];
+
+    const significantMonths = [
+      "2014 Nov", "2015 Jun", "2016 Sep", "2017 Mar", "2018 Mar",
+      "2019 Jul", "2020 Jul", "2021 Feb", "2022 Apr", "2023 Jul"
+    ];
+
+    function formatCompact(value) {
+      return new Intl.NumberFormat("en-US", {
+        notation: "compact",
+        maximumFractionDigits: value >= 100000 ? 1 : 0
+      }).format(value);
+    }
+
+    function pct(value, digits = 1) {
+      return `${(value * 100).toFixed(digits)}%`;
+    }
+
+    function svgTemplate(width, height, inner) {
+      return `
+        <svg viewBox="0 0 ${width} ${height}" role="img" aria-hidden="true">
+          ${inner}
+        </svg>
+      `;
+    }
+
+    function drawAnnualChart() {
+      const host = document.getElementById("annual-chart");
+      const width = host.clientWidth || 720;
+      const height = 340;
+      const pad = { top: 24, right: 58, bottom: 46, left: 60 };
+      const innerW = width - pad.left - pad.right;
+      const innerH = height - pad.top - pad.bottom;
+      const maxTotal = Math.max(...yearly.map(d => d.total));
+      const maxShare = 0.35;
+      const step = innerW / yearly.length;
+      const barWidth = Math.min(42, step * 0.58);
+
+      const yGrid = [0, 200000, 400000, 600000];
+      const grid = yGrid.map(value => {
+        const y = pad.top + innerH - (value / maxTotal) * innerH;
+        return `
+          <line x1="${pad.left}" y1="${y}" x2="${width - pad.right}" y2="${y}" stroke="rgba(255,255,255,0.1)" />
+          <text x="${pad.left - 10}" y="${y + 4}" fill="rgba(218,229,230,0.7)" font-size="11" text-anchor="end">${formatCompact(value)}</text>
+        `;
+      }).join("");
+
+      const shareLabels = [0, 0.15, 0.3].map(value => {
+        const y = pad.top + innerH - (value / maxShare) * innerH;
+        return `<text x="${width - pad.right + 10}" y="${y + 4}" fill="rgba(218,229,230,0.64)" font-size="11">${pct(value, 0)}</text>`;
+      }).join("");
+
+      const bars = yearly.map((d, i) => {
+        const x = pad.left + step * i + (step - barWidth) / 2;
+        const barH = (d.total / maxTotal) * innerH;
+        const y = pad.top + innerH - barH;
+        const highlight = d.year === 2018 ? "url(#barPeak)" : "url(#barFill)";
+        const labelY = height - 16;
+        return `
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${barH}" rx="10" fill="${highlight}" />
+          <text x="${x + barWidth / 2}" y="${labelY}" fill="rgba(218,229,230,0.72)" font-size="11" text-anchor="middle">${String(d.year).slice(2)}</text>
+        `;
+      }).join("");
+
+      const linePoints = yearly.map((d, i) => {
+        const x = pad.left + step * i + step / 2;
+        const y = pad.top + innerH - (d.stormShare / maxShare) * innerH;
+        return `${x},${y}`;
+      }).join(" ");
+
+      const areaPoints = `${pad.left + step / 2},${pad.top + innerH} ${linePoints} ${pad.left + step * (yearly.length - 1) + step / 2},${pad.top + innerH}`;
+
+      const dots = yearly.map((d, i) => {
+        const x = pad.left + step * i + step / 2;
+        const y = pad.top + innerH - (d.stormShare / maxShare) * innerH;
+        const label = d.year === 2018 ? `<text x="${x + 10}" y="${y - 10}" fill="#ffd7ab" font-size="12">2018 storm share ${pct(d.stormShare, 1)}</text>` : "";
+        return `
+          <circle cx="${x}" cy="${y}" r="${d.year === 2018 ? 5.5 : 4}" fill="${d.year === 2018 ? "#ffd7ab" : "#65d0cc"}" />
+          ${label}
+        `;
+      }).join("");
+
+      const annotationX = pad.left + step * 4 + step / 2;
+      const annotationY = pad.top + 16;
+
+      host.innerHTML = svgTemplate(width, height, `
+        <defs>
+          <linearGradient id="barFill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#65d0cc" stop-opacity="0.92" />
+            <stop offset="100%" stop-color="#1f8e96" stop-opacity="0.72" />
+          </linearGradient>
+          <linearGradient id="barPeak" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#f1a85b" stop-opacity="0.98" />
+            <stop offset="100%" stop-color="#ef7b63" stop-opacity="0.78" />
+          </linearGradient>
+          <linearGradient id="lineArea" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#65d0cc" stop-opacity="0.30" />
+            <stop offset="100%" stop-color="#65d0cc" stop-opacity="0.02" />
+          </linearGradient>
+        </defs>
+        ${grid}
+        ${shareLabels}
+        <line x1="${pad.left}" y1="${pad.top + innerH}" x2="${width - pad.right}" y2="${pad.top + innerH}" stroke="rgba(255,255,255,0.14)" />
+        <polygon points="${areaPoints}" fill="url(#lineArea)" />
+        <polyline points="${linePoints}" fill="none" stroke="#65d0cc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        ${bars}
+        ${dots}
+        <text x="${pad.left}" y="${pad.top - 6}" fill="rgba(248,241,230,0.88)" font-size="13">Outage records</text>
+        <text x="${width - pad.right + 10}" y="${pad.top - 6}" fill="rgba(248,241,230,0.72)" font-size="13">Severe-weather share</text>
+        <rect x="${annotationX - 86}" y="${annotationY}" width="172" height="48" rx="14" fill="rgba(8,20,24,0.88)" stroke="rgba(255,220,164,0.18)" />
+        <text x="${annotationX}" y="${annotationY + 18}" fill="#ffd7ab" font-size="12" text-anchor="middle">Peak scale year</text>
+        <text x="${annotationX}" y="${annotationY + 35}" fill="#f8f1e6" font-size="16" font-weight="700" text-anchor="middle">2018 • ${formatCompact(667269)}</text>
+      `);
+    }
+
+    function drawDurationChart() {
+      const host = document.getElementById("duration-chart");
+      const width = host.clientWidth || 540;
+      const height = 320;
+      const pad = { top: 20, right: 54, bottom: 44, left: 52 };
+      const innerW = width - pad.left - pad.right;
+      const innerH = height - pad.top - pad.bottom;
+      const maxP90 = 10;
+      const maxShare = 0.16;
+      const step = innerW / durationSeries.length;
+      const barWidth = Math.min(34, step * 0.58);
+
+      const gridVals = [0, 2.5, 5, 7.5, 10];
+      const grid = gridVals.map(value => {
+        const y = pad.top + innerH - (value / maxP90) * innerH;
+        return `
+          <line x1="${pad.left}" y1="${y}" x2="${width - pad.right}" y2="${y}" stroke="rgba(255,255,255,0.09)" />
+          <text x="${pad.left - 8}" y="${y + 4}" fill="rgba(218,229,230,0.7)" font-size="11" text-anchor="end">${value.toFixed(value % 1 ? 1 : 0)}h</text>
+        `;
+      }).join("");
+
+      const bars = durationSeries.map((d, i) => {
+        const x = pad.left + step * i + (step - barWidth) / 2;
+        const barH = (d.p90 / maxP90) * innerH;
+        const y = pad.top + innerH - barH;
+        const fill = d.year === 2020 ? "#f1a85b" : "#c15f77";
+        return `
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${barH}" rx="10" fill="${fill}" opacity="${d.year === 2020 ? 0.96 : 0.78}" />
+          <text x="${x + barWidth / 2}" y="${height - 14}" fill="rgba(218,229,230,0.72)" font-size="11" text-anchor="middle">${String(d.year).slice(2)}</text>
+        `;
+      }).join("");
+
+      const points = durationSeries.map((d, i) => {
+        const x = pad.left + step * i + step / 2;
+        const y = pad.top + innerH - (d.longShare / maxShare) * innerH;
+        return `${x},${y}`;
+      }).join(" ");
+
+      const dots = durationSeries.map((d, i) => {
+        const x = pad.left + step * i + step / 2;
+        const y = pad.top + innerH - (d.longShare / maxShare) * innerH;
+        const note = d.year === 2020 ? `<text x="${x + 10}" y="${y - 10}" fill="#ffd7ab" font-size="12">8h+ share ${pct(d.longShare, 1)}</text>` : "";
+        return `<circle cx="${x}" cy="${y}" r="${d.year === 2020 ? 5.5 : 4}" fill="#65d0cc" />${note}`;
+      }).join("");
+
+      host.innerHTML = svgTemplate(width, height, `
+        ${grid}
+        <line x1="${pad.left}" y1="${pad.top + innerH}" x2="${width - pad.right}" y2="${pad.top + innerH}" stroke="rgba(255,255,255,0.14)" />
+        <polyline points="${points}" fill="none" stroke="#65d0cc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        ${bars}
+        ${dots}
+        <text x="${pad.left}" y="${pad.top - 4}" fill="rgba(248,241,230,0.88)" font-size="13">P90 duration</text>
+        <text x="${width - pad.right + 8}" y="${pad.top - 4}" fill="rgba(248,241,230,0.72)" font-size="13">Share &gt; 8h</text>
+      `);
+    }
+
+    function drawIRRChart() {
+      const host = document.getElementById("irr-chart");
+      const width = host.clientWidth || 720;
+      const height = 320;
+      const pad = { top: 20, right: 28, bottom: 28, left: 176 };
+      const innerW = width - pad.left - pad.right;
+      const rowH = 58;
+      const maxVal = 7;
+      const axis = [1, 2, 4, 6];
+
+      const rows = irrSeries.map((d, i) => {
+        const y = pad.top + i * rowH + 22;
+        const barW = (d.value / maxVal) * innerW;
+        const fill = d.label === "Social-economic CVI" ? "url(#irrStrong)" : "url(#irrFill)";
+        return `
+          <text x="${pad.left - 14}" y="${y + 6}" fill="rgba(248,241,230,0.9)" font-size="13" text-anchor="end">${d.label}</text>
+          <line x1="${pad.left}" y1="${y}" x2="${pad.left + innerW}" y2="${y}" stroke="rgba(255,255,255,0.08)" />
+          <rect x="${pad.left}" y="${y - 12}" width="${barW}" height="24" rx="12" fill="${fill}" />
+          <text x="${pad.left + barW + 10}" y="${y + 5}" fill="#ffd7ab" font-size="13">${d.value.toFixed(3)} • ${d.detail}</text>
+        `;
+      }).join("");
+
+      const axisMarks = axis.map(value => {
+        const x = pad.left + (value / maxVal) * innerW;
+        return `
+          <line x1="${x}" y1="${pad.top - 4}" x2="${x}" y2="${height - pad.bottom + 4}" stroke="rgba(255,255,255,0.08)" />
+          <text x="${x}" y="${height - 6}" fill="rgba(218,229,230,0.68)" font-size="11" text-anchor="middle">${value.toFixed(1)}x</text>
+        `;
+      }).join("");
+
+      host.innerHTML = svgTemplate(width, height, `
+        <defs>
+          <linearGradient id="irrFill" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stop-color="#65d0cc" />
+            <stop offset="100%" stop-color="#1f8e96" />
+          </linearGradient>
+          <linearGradient id="irrStrong" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stop-color="#f1a85b" />
+            <stop offset="100%" stop-color="#ef7b63" />
+          </linearGradient>
+        </defs>
+        ${axisMarks}
+        ${rows}
+      `);
+    }
+
+    function drawBoroughChart() {
+      const host = document.getElementById("borough-chart");
+      const width = host.clientWidth || 720;
+      const height = 330;
+      const pad = { top: 22, right: 20, bottom: 54, left: 60 };
+      const innerW = width - pad.left - pad.right;
+      const innerH = height - pad.top - pad.bottom;
+      const maxVal = 0.8;
+      const groupW = innerW / boroughs.length;
+      const barW = Math.min(28, groupW * 0.24);
+
+      const gridVals = [0, 0.2, 0.4, 0.6, 0.8];
+      const grid = gridVals.map(value => {
+        const y = pad.top + innerH - (value / maxVal) * innerH;
+        return `
+          <line x1="${pad.left}" y1="${y}" x2="${width - pad.right}" y2="${y}" stroke="rgba(255,255,255,0.09)" />
+          <text x="${pad.left - 8}" y="${y + 4}" fill="rgba(218,229,230,0.7)" font-size="11" text-anchor="end">${pct(value, 0)}</text>
+        `;
+      }).join("");
+
+      const bars = boroughs.map((d, i) => {
+        const x = pad.left + groupW * i + groupW / 2;
+        const overallH = (d.overall / maxVal) * innerH;
+        const shareH = (d.highShare / maxVal) * innerH;
+        const y1 = pad.top + innerH - overallH;
+        const y2 = pad.top + innerH - shareH;
+        return `
+          <rect x="${x - barW - 4}" y="${y1}" width="${barW}" height="${overallH}" rx="10" fill="#65d0cc" />
+          <rect x="${x + 4}" y="${y2}" width="${barW}" height="${shareH}" rx="10" fill="${d.name === "Bronx" ? "#f1a85b" : "#ef7b63"}" opacity="${d.name === "Bronx" ? 1 : 0.82}" />
+          <text x="${x}" y="${height - 26}" fill="rgba(248,241,230,0.86)" font-size="11" text-anchor="middle">${d.name}</text>
+        `;
+      }).join("");
+
+      host.innerHTML = svgTemplate(width, height, `
+        ${grid}
+        <line x1="${pad.left}" y1="${pad.top + innerH}" x2="${width - pad.right}" y2="${pad.top + innerH}" stroke="rgba(255,255,255,0.14)" />
+        ${bars}
+        <rect x="${pad.left}" y="${height - 18}" width="12" height="12" rx="3" fill="#65d0cc" />
+        <text x="${pad.left + 18}" y="${height - 8}" fill="rgba(218,229,230,0.7)" font-size="12">Mean overall CVI</text>
+        <rect x="${pad.left + 130}" y="${height - 18}" width="12" height="12" rx="3" fill="#ef7b63" />
+        <text x="${pad.left + 148}" y="${height - 8}" fill="rgba(218,229,230,0.7)" font-size="12">High-CVI tract share</text>
+      `);
+    }
+
+    function fillMonths() {
+      const host = document.getElementById("month-pills");
+      host.innerHTML = significantMonths.map(label => `<span class="pill">${label}</span>`).join("");
+    }
+
+    function setupModal() {
+      const modal = document.getElementById("map-modal");
+      const image = document.getElementById("modal-image");
+      const title = document.getElementById("modal-title");
+      const description = document.getElementById("modal-description");
+      const close = document.getElementById("modal-close");
+
+      document.querySelectorAll(".map-card").forEach(card => {
+        card.addEventListener("click", () => {
+          image.src = card.dataset.image;
+          image.alt = card.dataset.title;
+          title.textContent = card.dataset.title;
+          description.textContent = card.dataset.description;
+          modal.classList.add("open");
+          modal.setAttribute("aria-hidden", "false");
+        });
+      });
+
+      function closeModal() {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+
+      close.addEventListener("click", closeModal);
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeModal();
+        }
+      });
+    }
+
+    function setupReveal() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll(".reveal").forEach(node => observer.observe(node));
+    }
+
+    function drawAllCharts() {
+      drawAnnualChart();
+      drawDurationChart();
+      drawIRRChart();
+      drawBoroughChart();
+      fillMonths();
+    }
+
+    drawAllCharts();
+    setupModal();
+    setupReveal();
+    window.addEventListener("resize", drawAllCharts);
+  </script>
+</body>
+</html>
