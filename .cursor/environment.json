@@ -1,0 +1,13 @@
+{
+  "name": "NYC Outage CVI Analysis",
+  "install": "sudo apt-get update && sudo apt-get install -y --no-install-recommends python3.12-venv python3-dev build-essential && python3 -m venv .venv && .venv/bin/python -m pip install --upgrade pip wheel setuptools && .venv/bin/python -m pip install -r requirements.txt -r requirements-dev.txt",
+  "terminals": [
+    {
+      "name": "map-server",
+      "command": ".venv/bin/python -m http.server 8000"
+    }
+  ],
+  "ports": [
+    8000
+  ]
+}
