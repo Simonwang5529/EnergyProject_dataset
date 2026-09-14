@@ -1,0 +1,27 @@
+# Full development / analysis stack for the NYC Outage CVI project.
+# Covers the interactive map builder (interactive_map/*.py), the data merge
+# script (merge_cvi_outage.py), and the Jupyter notebooks under notebooks/.
+#
+# Install into a virtualenv, e.g.:
+#   python3 -m venv .venv
+#   .venv/bin/python -m pip install -r requirements.txt -r requirements-dev.txt
+
+# Core data + imaging (Pillow is also pinned in requirements.txt)
+pandas>=2.2
+numpy>=1.26
+Pillow>=10.0.0
+openpyxl>=3.1
+
+# Scientific / statistical modeling used by the notebooks
+scipy>=1.11
+scikit-learn>=1.4
+statsmodels>=0.14
+
+# Plotting
+matplotlib>=3.8
+seaborn>=0.13
+
+# Notebook execution
+jupyter>=1.0
+ipython>=8.0
+nbconvert>=7.0
