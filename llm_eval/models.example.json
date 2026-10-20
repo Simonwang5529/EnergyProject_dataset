@@ -1,0 +1,10 @@
+[
+  {"name": "GLM", "base_url": "https://open.bigmodel.cn/api/paas/v4", "model": "FILL_ME exact model id",
+   "api_key_env": "ZHIPU_API_KEY", "temperature": 0.7, "max_tokens": 4096, "extra": {"thinking": {"type": "disabled"}}},
+  {"name": "Kimi", "base_url": "https://api.moonshot.ai/v1", "model": "FILL_ME exact model id",
+   "api_key_env": "MOONSHOT_API_KEY", "temperature": 0.7, "max_tokens": 4096},
+  {"name": "Lightning", "base_url": "FILL_ME OpenAI-compatible base url", "model": "FILL_ME exact model id",
+   "api_key_env": "LIGHTNING_API_KEY", "temperature": 0.7, "max_tokens": 4096},
+  {"name": "Ultra", "base_url": "FILL_ME OpenAI-compatible base url", "model": "FILL_ME exact model id",
+   "api_key_env": "ULTRA_API_KEY", "temperature": 0.7, "max_tokens": 4096}
+]
