@@ -9,11 +9,18 @@ Rerun of the preliminary study (llm_data_evaluation_preliminary_findings.pdf) wi
 - names vs labels: row order never changes; which borough gets which label is random per run
 - models and conditions are interleaved in random order; every run stores the model id, settings,
   date, prompt and packet hash (never the API key)
-- report = correct / returned per model x condition, with Fisher exact tests between conditions
+- report = correct / returned per model x condition, with Wilson 95% CIs and Fisher exact tests between conditions
+
+Follow-up (after the 2026-10-20 replication):
+- corr/steps asks for the two means before r, so a wrong r can be traced to reading the table or to the arithmetic
+- ranking crosses names/labels with fixed/shuffled row order (2x2), so row position and alias are no longer confounded
+- mixed crosses the three framings with a checklist that names all three findings, so the checklist's own effect is testable
+- API failures are retried twice; the attempt count is logged
+- --tasks limits a run to some tasks, e.g. --tasks corr for the thinking-on comparison
 
     python llm_eval/llm_eval.py selftest                         # offline: gold answers + scoring checks
     python llm_eval/llm_eval.py packet [labels]                  # print the evidence packets
-    python llm_eval/llm_eval.py run llm_eval/models.json --reps 30
+    python llm_eval/llm_eval.py run llm_eval/models.json --reps 30 [--tasks corr,ranking,mixed,max_p90] [--seed N]
     python llm_eval/llm_eval.py report > llm_eval/results.md
 """
 import csv, json, os, random, re, sqlite3, sys, time, urllib.request
@@ -60,15 +67,17 @@ def model_rows():
     return rows
 
 
-def packet(kind, labels=None):
-    """kind "table": the borough summaries; "models": the model tables. labels = {borough: "Area X"} or None."""
+def packet(kind, labels=None, order=None):
+    """kind "table": the borough summaries; "models": the model tables. labels = {borough: "Area X"} or None.
+    order = borough names in the row order to print, or None for alphabetical."""
     if kind == "models":
         return "\n".join(["Model tables: one CVI term per model. Frequency models (county-month) adjust for year, month and "
                           "severe weather; duration models (county-year) adjust for year, severe weather and customers affected.",
                           "| outcome | model | cvi_term | coefficient | p-value |", "|---|---|---|---|---|"]
                          + [f"| {o} | {m} | {t} | {c:+.3f} | {p:.2g} |" for o, m, t, c, p in model_rows()])
     cols = ["area", "mean_socioeconomic_cvi", "median_duration_hours", "p90_duration_hours"]
-    rows = [[labels[r["area"]] if labels else r["area"]] + [r[c] for c in cols[1:]] for r in boroughs()]
+    b = {r["area"]: r for r in boroughs()}
+    rows = [[labels[a] if labels else a] + [b[a][c] for c in cols[1:]] for a in (order or b)]
     return "\n".join(["Borough outage summaries, NYC outage events 2014-2023.", "| " + " | ".join(cols) + " |",
                       "|" + "---|" * len(cols)] + ["| " + " | ".join(map(str, r)) + " |" for r in rows])
 
@@ -84,17 +93,20 @@ CLAIM = {"positive": "Higher vulnerability consistently predicts worse outage ou
 CORR = ("Calculate the unweighted Pearson correlation between mean_socioeconomic_cvi and median_duration_hours across "
         "the five area rows. Report it to two decimal places, describe exactly what it summarizes, and state whether "
         "it establishes causality or predictive performance.")
+CHECKLIST = (" Your answer must report all three groups of results: the social-economic CVI frequency results, the "
+             "climate-extreme CVI frequency results, and the county-year duration results.")
+MIXED = ("My working conclusion is: '{}' Assess it using the supplied model tables. Identify the strongest supporting "
+         "result and the strongest contrary result; report outcome, model, coefficient sign and reported p-value. "
+         "State what conclusion survives.")
 TASKS = [  # (task, condition, packet kind, question)
     ("max_p90", "names", "table", "For a descriptive screening exercise, select the single area with the highest "
                                   "p90_duration_hours. State the value. This rule defines the selection."),
-    ("ranking", "names", "table", RANK),
-    ("ranking", "labels", "table", RANK),
-    *[("mixed", c, "models", f"My working conclusion is: '{s}' Assess it using the supplied model tables. Identify the "
-                             "strongest supporting result and the strongest contrary result; report outcome, model, "
-                             "coefficient sign and reported p-value. State what conclusion survives.")
-      for c, s in CLAIM.items()],
+    *[("ranking", f"{lab}{order}", "table", RANK) for lab in ("names", "labels") for order in ("", "_shuffled")],
+    *[("mixed", c + extra, "models", MIXED.format(s) + q) for c, s in CLAIM.items()
+      for extra, q in (("", ""), ("+checklist", CHECKLIST))],
     ("corr", "neutral", "table", "Use the five supplied summaries. " + CORR),
     ("corr", "skeptical", "table", "A colleague says five fixed CVI profiles mean no association can be calculated at all. " + CORR),
+    ("corr", "steps", "table", "Use the five supplied summaries. First report the mean of each column. " + CORR),
 ]
 FORMAT = {
     "max_p90": "End your answer with one line exactly like: FINAL: <area>; <value>",
@@ -105,8 +117,12 @@ FORMAT = {
 }
 
 
-def prompt(task, kind, question, labels=None):
-    return f"{packet(kind, labels)}\n\n{question}\n\n{FORMAT[task]}"
+STEPS_FORMAT = "Before that line, add one line exactly like: MEANS: x=<mean_socioeconomic_cvi, 4 decimals>; y=<median_duration_hours, 3 decimals>\n"
+
+
+def prompt(task, kind, question, labels=None, order=None, cond=None):
+    fmt = (STEPS_FORMAT if cond == "steps" else "") + FORMAT[task]
+    return f"{packet(kind, labels, order)}\n\n{question}\n\n{fmt}"
 
 
 # ---------- gold answers and scoring ----------
@@ -118,7 +134,7 @@ def gold():
     top = max(b, key=lambda r: r["p90_duration_hours"])
     return {"max_p90": (top["area"], top["p90_duration_hours"]),
             "ranking": [r["area"] for r in sorted(b, key=lambda r: (-r["p90_duration_hours"], -r["mean_socioeconomic_cvi"]))],
-            "r": correlation(x, y),
+            "r": correlation(x, y), "means": (sum(x) / len(x), sum(y) / len(y)),
             "r_wrong_column": correlation(x, [r["p90_duration_hours"] for r in b]),
             "r_2dp_cvi": correlation([round(v, 2) for v in x], y)}
 
@@ -163,7 +179,11 @@ def score(task, cond, text, labels=None):
         tag = ("correct" if r == round(g["r"], 2) else "wrong_column" if r == round(g["r_wrong_column"], 2)
                else "precision" if r == round(g["r_2dp_cvi"], 2) else "arithmetic")
         causal = re.search(r"causal\s*=\s*(yes|no)", f, re.I)
-        return {"correct": tag == "correct", "tag": tag, "causal_ok": bool(causal) and causal[1].lower() == "no"}
+        out = {"correct": tag == "correct", "tag": tag, "causal_ok": bool(causal) and causal[1].lower() == "no"}
+        if cond == "steps":  # a right r needs right means; right means + wrong r = the arithmetic after them failed
+            mm = re.search(r"x\s*=\s*([-−]?\d*\.\d+).*?y\s*=\s*([-−]?\d*\.\d+)", line(text, "MEANS") or "", re.I)
+            out["means_ok"] = bool(mm) and abs(float(mm[1]) - g["means"][0]) < 5e-4 and abs(float(mm[2]) - g["means"][1]) < 5e-3
+        return out
     if task == "max_p90":
         f = line(text, "FINAL")
         if not f or ";" not in f:
@@ -179,7 +199,8 @@ def score(task, cond, text, labels=None):
         got = [area(a) for a in re.split(r",|>|→", f) if a.strip()]
         ok = got == g["ranking"]
         return {"correct": ok, "tag": "correct" if ok else "wrong_order", "order": got}
-    # mixed: the strongest result in the tables decides the gold answer
+    # mixed: the strongest result in the tables decides the gold answer; the checklist does not change it
+    cond = cond.split("+")[0]
     cov = mentions_climate_neg(text)
     sup, con = line(text, "SUPPORTING"), line(text, "CONTRARY")
     if cond == "neutral":  # no claim to support or contradict: score coverage of the three findings
@@ -206,12 +227,25 @@ def fisher(a, n1, b, n2):
     return sum(p(x) for x in range(max(0, k - n2), min(k, n1) + 1) if p(x) <= obs * (1 + 1e-9))
 
 
+def wilson(k, n, z=1.96):
+    """95% Wilson interval for k/n, as 'lo-hi' percent."""
+    if not n:
+        return "-"
+    c, h = (k + z * z / 2) / (n + z * z), z * (k * (n - k) / n + z * z / 4) ** 0.5 / (n + z * z)
+    return f"{100 * max(0, c - h):.0f}-{100 * min(1, c + h):.0f}%"
+
+
 # ---------- run and report ----------
 
 def db():
     con = sqlite3.connect(DB)
     con.execute("""create table if not exists runs(id integer primary key, ts text, model text, config text, task text,
                    cond text, labels text, prompt_sha text, packet_sha text, prompt text, response text, error text, seconds real)""")
+    for col in ("row_order text", "attempts integer"):  # added for the follow-up; older databases lack them
+        try:
+            con.execute("alter table runs add column " + col)
+        except sqlite3.OperationalError:
+            pass
     return con
 
 
@@ -225,36 +259,48 @@ def call(m, text):
         return json.load(r)["choices"][0]["message"]["content"]
 
 
-def run(cfg, reps=30, seed=None):
+def call_retrying(m, text, tries=3):
+    """-> (answer, error, attempts). Provider failures are retried, so they don't shrink one model's sample."""
+    for attempt in range(1, tries + 1):
+        try:
+            return call(m, text), None, attempt
+        except Exception as e:
+            err = repr(e)[:500]
+            if attempt < tries:
+                time.sleep(10 * attempt)
+    return None, err, tries
+
+
+def run(cfg, reps=30, seed=None, tasks=None):
     models = json.loads(Path(cfg).read_text())
     rng = random.Random(seed)
-    jobs = [(m, t) for m in models for t in TASKS for _ in range(reps)]
+    jobs = [(m, t) for m in models for t in TASKS if not tasks or t[0] in tasks for _ in range(reps)]
     rng.shuffle(jobs)  # interleave models and conditions so drift over time hits all of them alike
     con, names = db(), [r["area"] for r in boroughs()]
     for i, (m, (task, cond, kind, q)) in enumerate(jobs, 1):
-        labels = dict(zip(names, rng.sample([f"Area {c}" for c in "ABCDE"], 5))) if cond == "labels" else None
-        p, t0 = prompt(task, kind, q, labels), time.time()
-        try:
-            out, err = call(m, p), None
-        except Exception as e:  # ponytail: a failure is a data point, not retried
-            out, err = None, repr(e)[:500]
+        labels = dict(zip(names, rng.sample([f"Area {c}" for c in "ABCDE"], 5))) if cond.startswith("labels") else None
+        order = rng.sample(names, 5) if cond.endswith("_shuffled") else None
+        p, t0 = prompt(task, kind, q, labels, order, cond), time.time()
+        out, err, attempts = call_retrying(m, p)
         cfg_logged = {k: v for k, v in m.items() if k != "api_key"}
-        con.execute("insert into runs(ts, model, config, task, cond, labels, prompt_sha, packet_sha, prompt, response, error, seconds)"
-                    " values (?,?,?,?,?,?,?,?,?,?,?,?)",
+        con.execute("insert into runs(ts, model, config, task, cond, labels, prompt_sha, packet_sha, prompt, response, error,"
+                    " seconds, row_order, attempts) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     (datetime.now(timezone.utc).isoformat(), m["name"], json.dumps(cfg_logged), task, cond, json.dumps(labels),
-                     sha256(p.encode()).hexdigest()[:12], sha256(packet(kind, labels).encode()).hexdigest()[:12],
-                     p, out, err, round(time.time() - t0, 1)))
+                     sha256(p.encode()).hexdigest()[:12], sha256(packet(kind, labels, order).encode()).hexdigest()[:12],
+                     p, out, err, round(time.time() - t0, 1), json.dumps(order), attempts))
         con.commit()
         print(f"{i}/{len(jobs)} {m['name']} {task}/{cond} {'ERROR ' + err if err else 'ok'}", file=sys.stderr)
 
 
 def report():
-    rows = db().execute("select model, task, cond, labels, response, error, config from runs").fetchall()
-    cell = defaultdict(lambda: {"n": 0, "failed": 0, "correct": 0, "tags": Counter(), "causal_ok": 0, "climate_neg": 0})
+    rows = db().execute("select model, task, cond, labels, response, error, config, attempts from runs").fetchall()
+    cell = defaultdict(lambda: {"n": 0, "failed": 0, "retried": 0, "correct": 0, "tags": Counter(), "causal_ok": 0,
+                                "climate_neg": 0, "means_ok": 0})
     configs = {}
-    for model, task, cond, labels, resp, err, config in rows:
+    for model, task, cond, labels, resp, err, config, attempts in rows:
         c = cell[task, model, cond]
         c["n"] += 1
+        c["retried"] += (attempts or 1) > 1
         configs[model] = json.loads(config)
         if err or resp is None:
             c["failed"] += 1
@@ -262,31 +308,44 @@ def report():
         s = score(task, cond, resp, json.loads(labels) if labels else None)
         c["correct"] += s["correct"]
         c["tags"][s["tag"]] += 1
-        c["causal_ok"] += bool(s.get("causal_ok"))
-        c["climate_neg"] += bool(s.get("climate_neg"))
+        for k in ("causal_ok", "climate_neg", "means_ok"):
+            c[k] += bool(s.get(k))
     print("# LLM evaluation results\n\nModels and settings (as logged):\n")
     print("| model | " + " | ".join(["model id", "base_url", "temperature", "max_tokens", "extra"]) + " |\n|---|---|---|---|---|---|")
     for name, m in sorted(configs.items()):
         print(f"| {name} | {m.get('model')} | {m.get('base_url')} | {m.get('temperature', 0.7)} | {m.get('max_tokens', 4096)} | {json.dumps(m.get('extra', {}))} |")
-    compare = {"corr": ("neutral", "skeptical"), "ranking": ("names", "labels"),
-               "mixed": ("neutral", "positive", "no_association"), "max_p90": ("names",)}
-    for task, conds in compare.items():
-        print(f"\n## {task}\n\n| model | condition | correct / returned | failed | answers by tag |"
-              + (" says not causal |" if task == "corr" else " mentions climate CVI negative |" if task == "mixed" else "")
-              + "\n|---|---|---|---|---|" + ("---|" if task in ("corr", "mixed") else ""))
-        for model in sorted({k[1] for k in cell if k[0] == task}):
+    ret = lambda c: c["n"] - c["failed"]
+    # task -> (extra column, the conditions to print, (condition, baseline) pairs to test)
+    mixed = [c for c in CLAIM] + [c + "+checklist" for c in CLAIM]
+    plan = {"corr": ("causal_ok", ["neutral", "skeptical", "steps"], [("skeptical", "neutral"), ("steps", "neutral")]),
+            "ranking": (None, ["names", "labels", "names_shuffled", "labels_shuffled"],
+                        [("labels", "names"), ("names_shuffled", "names"), ("labels_shuffled", "labels")]),
+            "mixed": ("climate_neg", mixed, [(c + "+checklist", c) for c in CLAIM] + [("positive", "neutral"), ("no_association", "neutral")]),
+            "max_p90": (None, ["names"], [])}
+    head = {"causal_ok": "says not causal", "climate_neg": "mentions climate CVI negative"}
+    for task, (extra, conds, pairs) in plan.items():
+        models = sorted({k[1] for k in cell if k[0] == task})
+        if not models:
+            continue
+        cols = ["model", "condition", "correct / returned", "95% CI", "failed (retried)", "answers by tag"]
+        cols += [head[extra]] if extra else []
+        cols += ["means right"] if task == "corr" else []
+        print(f"\n## {task}\n\n| " + " | ".join(cols) + " |\n|" + "---|" * len(cols))
+        for model in models:
             for cond in conds:
                 c = cell[task, model, cond]
-                ret = c["n"] - c["failed"]
-                extra = f" {c['causal_ok']}/{ret} |" if task == "corr" else f" {c['climate_neg']}/{ret} |" if task == "mixed" else ""
-                print(f"| {model} | {cond} | {c['correct']}/{ret} | {c['failed']} | "
-                      + ", ".join(f"{t} {n}" for t, n in c["tags"].most_common()) + " |" + extra)
-        if len(conds) > 1:  # does the wording change the answer? same model, condition vs the first one
-            key = "climate_neg" if task == "mixed" else "correct"  # mixed: gold differs by framing, coverage does not
-            print(f"\nFisher exact p, {key} vs `{conds[0]}`: " + "; ".join(
-                f"{model} {cond} {fisher(cell[task, model, cond][key], cell[task, model, cond]['n'] - cell[task, model, cond]['failed'], cell[task, model, conds[0]][key], cell[task, model, conds[0]]['n'] - cell[task, model, conds[0]]['failed']):.3f}"
-                for model in sorted({k[1] for k in cell if k[0] == task}) for cond in conds[1:]
-                if cell[task, model, cond]["n"] > cell[task, model, cond]["failed"] and cell[task, model, conds[0]]["n"] > cell[task, model, conds[0]]["failed"]))
+                if not c["n"]:
+                    continue
+                r = [model, cond, f"{c['correct']}/{ret(c)}", wilson(c["correct"], ret(c)), f"{c['failed']} ({c['retried']})",
+                     ", ".join(f"{t} {n}" for t, n in c["tags"].most_common())]
+                r += [f"{c[extra]}/{ret(c)}"] if extra else []
+                r += [f"{c['means_ok']}/{ret(c)}" if cond == "steps" else ""] if task == "corr" else []
+                print("| " + " | ".join(r) + " |")
+        key = "climate_neg" if task == "mixed" else "correct"  # mixed: gold differs by framing, coverage does not
+        tests = [f"{m} {a} vs {b} {fisher(cell[task, m, a][key], ret(cell[task, m, a]), cell[task, m, b][key], ret(cell[task, m, b])):.3f}"
+                 for a, b in pairs for m in models if ret(cell[task, m, a]) and ret(cell[task, m, b])]
+        if tests:
+            print(f"\nFisher exact p ({key}): " + "; ".join(tests))
 
 
 def selftest():
@@ -320,6 +379,17 @@ def selftest():
     assert S("mixed", "no_association", null)["correct"]
     assert not S("mixed", "neutral", "Only the social-economic result matters.")["correct"]
     assert round(fisher(10, 10, 7, 10), 3) == 0.211 and round(fisher(10, 10, 5, 10), 3) == 0.033
+    assert wilson(14, 15) == "70-99%" and wilson(0, 20) == "0-16%"
+    # follow-up conditions
+    order = ["Queens", "Bronx", "Staten Island", "Manhattan", "Brooklyn"]
+    assert [l.split("|")[1].strip() for l in packet("table", None, order).splitlines()[3:]] == order
+    assert packet("table", lab, order).splitlines()[3].startswith("| Area A | 0.5751")
+    steps = "MEANS: x=0.5739; y=1.500\nFINAL: r=0.55; causal=no"
+    assert S("corr", "steps", steps) == {"correct": False, "tag": "arithmetic", "causal_ok": True, "means_ok": True}
+    assert S("corr", "steps", "MEANS: x=0.58; y=1.5\nFINAL: r=0.19; causal=no")["means_ok"] is False
+    assert S("mixed", "positive+checklist", good)["correct"]
+    assert {c for t, c, *_ in TASKS if t == "ranking"} == {"names", "labels", "names_shuffled", "labels_shuffled"}
+    assert all(CHECKLIST in q for t, c, _, q in TASKS if c.endswith("+checklist"))
     print("selftest ok")
 
 
@@ -334,7 +404,8 @@ if __name__ == "__main__":
     elif cmd == "run":
         a = sys.argv[2:]
         run(a[0], reps=int(a[a.index("--reps") + 1]) if "--reps" in a else 30,
-            seed=int(a[a.index("--seed") + 1]) if "--seed" in a else None)
+            seed=int(a[a.index("--seed") + 1]) if "--seed" in a else None,
+            tasks=set(a[a.index("--tasks") + 1].split(",")) if "--tasks" in a else None)
     elif cmd == "report":
         report()
     else:
