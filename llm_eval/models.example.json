@@ -6,5 +6,11 @@
   {"name": "Lightning", "base_url": "FILL_ME OpenAI-compatible base url", "model": "FILL_ME exact model id",
    "api_key_env": "LIGHTNING_API_KEY", "temperature": 0.7, "max_tokens": 4096},
   {"name": "Ultra", "base_url": "FILL_ME OpenAI-compatible base url", "model": "FILL_ME exact model id",
-   "api_key_env": "ULTRA_API_KEY", "temperature": 0.7, "max_tokens": 4096}
+   "api_key_env": "ULTRA_API_KEY", "temperature": 0.7, "max_tokens": 4096},
+  {"name": "Lightning+thinking", "base_url": "FILL_ME same as Lightning", "model": "FILL_ME same as Lightning",
+   "api_key_env": "LIGHTNING_API_KEY", "temperature": 0.7, "max_tokens": 16384,
+   "extra": {"FILL_ME": "the provider's switch that turns reasoning on"}},
+  {"name": "Ultra+thinking", "base_url": "FILL_ME same as Ultra", "model": "FILL_ME same as Ultra",
+   "api_key_env": "ULTRA_API_KEY", "temperature": 0.7, "max_tokens": 16384,
+   "extra": {"FILL_ME": "the provider's switch that turns reasoning on"}}
 ]
