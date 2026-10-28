@@ -17,11 +17,15 @@ Follow-up (after the 2026-10-20 replication):
 - mixed crosses the three framings with a checklist that names all three findings, so the checklist's own effect is testable
 - API failures are retried twice; the attempt count is logged
 - --tasks limits a run to some tasks, e.g. --tasks corr for the thinking-on comparison
+- runs resume: rerunning the same command skips answered jobs and retries failed ones (a new --seed = a new batch)
+- finish_reason and token usage are logged; wrong answers cut off by max_tokens are tagged truncated
+- handcheck writes a blinded sample for a person to score what the regexes can't; report reads the scores back
 
     python llm_eval/llm_eval.py selftest                         # offline: gold answers + scoring checks
     python llm_eval/llm_eval.py packet [labels]                  # print the evidence packets
     python llm_eval/llm_eval.py run llm_eval/models.json --reps 30 [--tasks corr,ranking,mixed,max_p90] [--seed N]
     python llm_eval/llm_eval.py report > llm_eval/results.md
+    python llm_eval/llm_eval.py handcheck [--n 10]               # blinded sample to score by hand; report reads it back
 """
 import csv, json, os, random, re, sqlite3, sys, time, urllib.request
 from collections import Counter, defaultdict
@@ -241,7 +245,8 @@ def db():
     con = sqlite3.connect(DB)
     con.execute("""create table if not exists runs(id integer primary key, ts text, model text, config text, task text,
                    cond text, labels text, prompt_sha text, packet_sha text, prompt text, response text, error text, seconds real)""")
-    for col in ("row_order text", "attempts integer"):  # added for the follow-up; older databases lack them
+    # added for the follow-up; older databases lack them
+    for col in ("row_order text", "attempts integer", "job_key text", "finish_reason text", "usage text"):
         try:
             con.execute("alter table runs add column " + col)
         except sqlite3.OperationalError:
@@ -250,54 +255,71 @@ def db():
 
 
 def call(m, text):
-    """OpenAI-compatible /chat/completions (GLM, Kimi and most providers offer one)."""
+    """OpenAI-compatible /chat/completions (GLM, Kimi and most providers offer one).
+    -> (answer, finish_reason, usage). finish_reason "length" means max_tokens cut the answer off."""
     body = {"model": m["model"], "messages": [{"role": "user", "content": text}],
             "temperature": m.get("temperature", 0.7), "max_tokens": m.get("max_tokens", 4096), **m.get("extra", {})}
     req = urllib.request.Request(m["base_url"].rstrip("/") + "/chat/completions", json.dumps(body).encode(),
                                  {"Content-Type": "application/json", "Authorization": "Bearer " + os.environ[m["api_key_env"]]})
     with urllib.request.urlopen(req, timeout=600) as r:
-        return json.load(r)["choices"][0]["message"]["content"]
+        d = json.load(r)
+    c = d["choices"][0]
+    return c["message"].get("content") or "", c.get("finish_reason"), d.get("usage")
 
 
 def call_retrying(m, text, tries=3):
-    """-> (answer, error, attempts). Provider failures are retried, so they don't shrink one model's sample."""
+    """-> (answer, finish_reason, usage, error, attempts). Provider failures are retried, so they don't shrink one model's sample."""
     for attempt in range(1, tries + 1):
         try:
-            return call(m, text), None, attempt
+            return (*call(m, text), None, attempt)
         except Exception as e:
             err = repr(e)[:500]
             if attempt < tries:
                 time.sleep(10 * attempt)
-    return None, err, tries
+    return None, None, None, err, tries
 
 
-def run(cfg, reps=30, seed=None, tasks=None):
+def run(cfg, reps=30, seed=1, tasks=None):
+    """Resumable: a job is (seed, model, task, condition, rep). Rerunning the same command skips the jobs that already
+    have an answer and retries the ones that failed. Use a new --seed for an independent batch in the same database."""
     models = json.loads(Path(cfg).read_text())
-    rng = random.Random(seed)
-    jobs = [(m, t) for m in models for t in TASKS if not tasks or t[0] in tasks for _ in range(reps)]
-    rng.shuffle(jobs)  # interleave models and conditions so drift over time hits all of them alike
+    jobs = [(m, t, rep) for m in models for t in TASKS if not tasks or t[0] in tasks for rep in range(reps)]
+    random.Random(seed).shuffle(jobs)  # interleave models and conditions so drift over time hits all of them alike
     con, names = db(), [r["area"] for r in boroughs()]
-    for i, (m, (task, cond, kind, q)) in enumerate(jobs, 1):
+    done = {k for (k,) in con.execute("select job_key from runs where job_key is not null and error is null")}
+    print(f"seed {seed}: {len(jobs)} jobs, {sum(key(seed, m, t, r) in done for m, t, r in jobs)} already answered", file=sys.stderr)
+    for i, (m, (task, cond, kind, q), rep) in enumerate(jobs, 1):
+        k = key(seed, m, (task, cond), rep)
+        if k in done:
+            continue
+        rng = random.Random(k)  # labels and row order depend on the job only, so a resumed job gets the same prompt
         labels = dict(zip(names, rng.sample([f"Area {c}" for c in "ABCDE"], 5))) if cond.startswith("labels") else None
         order = rng.sample(names, 5) if cond.endswith("_shuffled") else None
         p, t0 = prompt(task, kind, q, labels, order, cond), time.time()
-        out, err, attempts = call_retrying(m, p)
-        cfg_logged = {k: v for k, v in m.items() if k != "api_key"}
+        out, finish, usage, err, attempts = call_retrying(m, p)
+        cfg_logged = {n: v for n, v in m.items() if n != "api_key"}
+        # an earlier failure of this job, now retried: replace the row but keep its attempts in the count
+        attempts += con.execute("select coalesce(sum(attempts), 0) from runs where job_key = ?", (k,)).fetchone()[0]
+        con.execute("delete from runs where job_key = ?", (k,))
         con.execute("insert into runs(ts, model, config, task, cond, labels, prompt_sha, packet_sha, prompt, response, error,"
-                    " seconds, row_order, attempts) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    " seconds, row_order, attempts, job_key, finish_reason, usage) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     (datetime.now(timezone.utc).isoformat(), m["name"], json.dumps(cfg_logged), task, cond, json.dumps(labels),
                      sha256(p.encode()).hexdigest()[:12], sha256(packet(kind, labels, order).encode()).hexdigest()[:12],
-                     p, out, err, round(time.time() - t0, 1), json.dumps(order), attempts))
+                     p, out, err, round(time.time() - t0, 1), json.dumps(order), attempts, k, finish, json.dumps(usage)))
         con.commit()
-        print(f"{i}/{len(jobs)} {m['name']} {task}/{cond} {'ERROR ' + err if err else 'ok'}", file=sys.stderr)
+        print(f"{i}/{len(jobs)} {m['name']} {task}/{cond} {'ERROR ' + err if err else finish or 'ok'}", file=sys.stderr)
+
+
+def key(seed, m, t, rep):
+    return f"{seed}|{m['name']}|{t[0]}|{t[1]}|{rep}"
 
 
 def report():
-    rows = db().execute("select model, task, cond, labels, response, error, config, attempts from runs").fetchall()
+    rows = db().execute("select model, task, cond, labels, response, error, config, attempts, finish_reason from runs").fetchall()
     cell = defaultdict(lambda: {"n": 0, "failed": 0, "retried": 0, "correct": 0, "tags": Counter(), "causal_ok": 0,
                                 "climate_neg": 0, "means_ok": 0})
     configs = {}
-    for model, task, cond, labels, resp, err, config, attempts in rows:
+    for model, task, cond, labels, resp, err, config, attempts, finish in rows:
         c = cell[task, model, cond]
         c["n"] += 1
         c["retried"] += (attempts or 1) > 1
@@ -307,7 +329,8 @@ def report():
             continue
         s = score(task, cond, resp, json.loads(labels) if labels else None)
         c["correct"] += s["correct"]
-        c["tags"][s["tag"]] += 1
+        # a wrong answer that hit max_tokens is a configuration problem, not a wrong reading: count it apart
+        c["tags"]["truncated" if finish == "length" and not s["correct"] else s["tag"]] += 1
         for k in ("causal_ok", "climate_neg", "means_ok"):
             c[k] += bool(s.get(k))
     print("# LLM evaluation results\n\nModels and settings (as logged):\n")
@@ -346,6 +369,52 @@ def report():
                  for a, b in pairs for m in models if ret(cell[task, m, a]) and ret(cell[task, m, b])]
         if tests:
             print(f"\nFisher exact p ({key}): " + "; ".join(tests))
+    handcheck_report()
+
+
+HANDCHECK = HERE / "handcheck.csv"
+HC_COLS = ["id", "task", "prompt", "response", "r_described_ok", "contradicts_itself", "notes"]
+
+
+def handcheck(n=10, seed=0, path=None):
+    """Write a sample of returned answers for a person to score: n per model x task, model name hidden, shuffled.
+    Fill r_described_ok (corr only: does it say r is a 5-point unweighted summary, not causal or predictive) and
+    contradicts_itself with yes/no. `report` reads the file back."""
+    path = path or HANDCHECK
+    if Path(path).exists():
+        sys.exit(f"{path} exists; it may hold someone's scores. Move it aside first.")
+    rows = db().execute("select id, model, task, prompt, response from runs where error is null and response is not null").fetchall()
+    rng, by = random.Random(seed), defaultdict(list)
+    for r in rows:
+        by[r[1], r[2]].append(r)
+    sample = [r for group in by.values() for r in rng.sample(group, min(n, len(group)))]
+    rng.shuffle(sample)  # so the checker can't tell models apart by position
+    with open(path, "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(HC_COLS)
+        for i, _, task, p, resp in sample:
+            w.writerow([i, task, p, resp, "" if task == "corr" else "n/a", "", ""])
+    print(f"wrote {len(sample)} answers to {path}", file=sys.stderr)
+
+
+def handcheck_report(path=None):
+    path = path or HANDCHECK
+    if not Path(path).exists():
+        return
+    model = dict(db().execute("select id, model from runs").fetchall())
+    yes = lambda v: v.strip().lower() in ("yes", "y", "1")
+    filled = lambda v: v.strip().lower() in ("yes", "y", "1", "no", "n", "0")
+    cell = defaultdict(lambda: Counter())
+    for r in csv.DictReader(open(path)):
+        c = cell[model.get(int(r["id"]), "?"), r["task"]]
+        for col in ("r_described_ok", "contradicts_itself"):
+            if filled(r[col]):
+                c[col + "_n"] += 1
+                c[col] += yes(r[col])
+    print("\n## Hand check\n\n| model | task | r described correctly | contradicts itself |\n|---|---|---|---|")
+    for (m, t), c in sorted(cell.items()):
+        f = lambda col: f"{c[col]}/{c[col + '_n']}" if c[col + "_n"] else "-"
+        print(f"| {m} | {t} | {f('r_described_ok')} | {f('contradicts_itself')} |")
 
 
 def selftest():
@@ -404,9 +473,12 @@ if __name__ == "__main__":
     elif cmd == "run":
         a = sys.argv[2:]
         run(a[0], reps=int(a[a.index("--reps") + 1]) if "--reps" in a else 30,
-            seed=int(a[a.index("--seed") + 1]) if "--seed" in a else None,
+            seed=int(a[a.index("--seed") + 1]) if "--seed" in a else 1,
             tasks=set(a[a.index("--tasks") + 1].split(",")) if "--tasks" in a else None)
     elif cmd == "report":
         report()
+    elif cmd == "handcheck":
+        a = sys.argv[2:]
+        handcheck(n=int(a[a.index("--n") + 1]) if "--n" in a else 10, seed=int(a[a.index("--seed") + 1]) if "--seed" in a else 0)
     else:
         sys.exit(__doc__)

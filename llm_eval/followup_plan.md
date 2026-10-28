@@ -48,6 +48,16 @@ Run A matters most and is the cheapest. 20 reps per condition separate ≈95% fr
 | C | `run models.json --tasks mixed --reps 20` (4 base models, Lightning included) | 480 | Does the omission come back without a checklist, and does the checklist remove it? |
 
 Use a separate `runs.sqlite` per run (move it aside between runs), or keep one database and read the tables by task.
+
+If a run stops partway (network, quota, Ctrl-C), rerun the same command. Jobs that already have an answer are skipped,
+failed ones are retried, and each job gets the same prompt as before. A new `--seed` starts an independent batch. Check the
+`truncated` tag in Run A: thinking models can spend `max_tokens` on reasoning, and a cut-off answer counts as a
+configuration problem, not a wrong number. If many answers are truncated, raise `max_tokens` and rerun those jobs.
+
+After the runs, `python llm_eval/llm_eval.py handcheck` writes `handcheck.csv`, 10 answers per model × task with the model
+hidden. Score two things with yes/no, the ones the scoring script cannot judge: `r_described_ok` (corr answers: does
+the answer say r is a five-point unweighted summary that shows neither causality nor predictive power) and
+`contradicts_itself`. The command will not overwrite an existing file. `report` adds the scores as a final table.
 Before reading any results, agree on two things: the scored endpoint for each run is the `correct` column (for C, the
 `mentions climate CVI negative` column), and any comparison not in the Fisher line is exploratory.
 
