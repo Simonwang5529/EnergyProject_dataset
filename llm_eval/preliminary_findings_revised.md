@@ -12,10 +12,12 @@ We asked GLM, Kimi, Lightning and Ultra to identify boroughs with the highest va
 
 | Model | Provider | Exact model ID | Reasoning ("thinking") | Temperature | Run dates |
 |---|---|---|---|---|---|
-| GLM | *to fill* | *to fill* | *to fill* | *to fill* | *to fill* |
-| Kimi | *to fill* | *to fill* | *to fill* | *to fill* | *to fill* |
-| Lightning | *to fill* | *to fill* | disabled | *to fill* | *to fill* |
-| Ultra | *to fill* | *to fill* | disabled | *to fill* | *to fill* |
+| GLM | NVIDIA hosted | `z-ai/glm-5.3` | `reasoning_effort: "low"`, `clear_thinking: true` | 0.2 | 2026-10-08 to 09 UTC |
+| Kimi | NVIDIA hosted | `moonshotai/kimi-k3` | no option set | 0.2 | 2026-10-08 to 09 UTC |
+| Lightning | NVIDIA hosted | `nvidia/nemotron-3.5-lightning-30b-a3b` | disabled (`enable_thinking: false`) | 0.2 | 2026-10-08 to 09 UTC |
+| Ultra | NVIDIA hosted | `nvidia/nemotron-3-ultra-550b-a55b` | disabled (`enable_thinking: false`) | 0.2 | 2026-10-08 to 09 UTC |
+
+Output limit 16,384 tokens. From Sahil's audit of the SQLite ledgers (2026-11-01). Later Kimi runs used `kimi-k2.6`, which could not be accessed.
 
 For some questions, we changed the wording while keeping the numbers unchanged. We also replaced borough names with anonymous labels to check whether the names influenced the answers.
 
@@ -119,7 +121,7 @@ Our preliminary evidence shows differences in accuracy, consistency and evidence
 - Ten runs per condition detect only large differences. 10/10 vs 7/10 correct gives Fisher p = 0.21; only 10/10 vs 5/10 reaches p = 0.03. The rerun uses 30 per condition, enough to detect about 90% vs 60%.
 - Reasoning settings differ between models, so model and configuration effects are mixed.
 - The correlation answers were scored on the number only. The prompt also asked what r summarizes and whether it shows causality.
-- "Null duration findings" holds for the county-year models (`part_10/duration_model_summary.csv`), where no CVI term is significant. It does not hold for the event-level Ridge model in the EDA report, which finds a positive social-economic effect on duration (0.043, CI 0.001 to 0.081). *To fill: which duration models the first packet contained.* The rerun packet contains the county-year models only.
+- "Null duration findings" holds for the county-year models (`part_10/duration_model_summary.csv`), where no CVI term is significant. It does not hold for the event-level Ridge model in the EDA report, which finds a positive social-economic effect on duration (0.043, CI 0.001 to 0.081). The first packet contained the same kind of evidence: six county-year OLS duration models, each on 47 observations, all with CVI p > 0.05 (Sahil's audit). The rerun packet also contains the county-year models only.
 
 ## Next run
 

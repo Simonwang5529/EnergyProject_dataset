@@ -24,13 +24,31 @@ limit (1,192 tokens at most), and the earlier thinking-off batches at 16,384 tok
   in Runs B and C can't be run as written. "Kimi" was k3 in the early batches and k2.6 later: label them separately.
 - Sahil's October 23 study (705 responses) already compares names and labels with row order fixed: Lightning 22/30 vs
   23/30, Ultra 30/30 vs 30/30. Only the row-order arm of Run B is still open.
-- The same study's mixed prompts have no checklist and still cover the climate result: GLM 82/82, Lightning 87/90, Ultra
-  86/90. The first study's omission may largely be a scoring artifact. Rescore that ledger before spending on Run C.
-- `mentions_climate_neg` and `sign` here missed a bare `-`, the bug Sahil found in his scorer. Both are fixed. On the
-  October 23 ledger the fixed `mentions_climate_neg` gives GLM 81/82, Lightning 87/90 (54/90 before), Ultra 83/90.
+- **The omission was real, and its cause is open.** `mentions_climate_neg` and `sign` here missed a bare `-`, the bug Sahil
+  found in his scorer. Both are fixed. On the first study's free-form answers, rescoring only moves Ultra from 15/27 to
+  17/27 (GLM 30/30, Kimi 27/28 by this measure, 28/28 by hand), and the misses do omit the result. On the October 23
+  ledger, which has no checklist but does have an answer template, Lightning goes from 54/90 to 87/90 and Ultra from 71/90
+  to 83/90 (86/90 reviewed by Sahil). So something other than a checklist can remove the omission: the template, the
+  temperature (0.2 then, 0.7 now) or the packet.
+- **Run C as first written was not an exact replication.** Its no-checklist rows carry the answer template, which the
+  first study did not have. `+freeform` conditions now drop it, and `Ultra t0.2` in `models.example.json` matches the
+  first study's temperature.
+- `means_ok` now requires the value as rounded, as Sahil's analysis does: `x=0.5740` is wrong. Lightning's steps rows
+  are 15/20 means right, not 17/20.
+- `corr_new` adds three correlations: another column of the same table, a negative r, and ten rows.
 
-**Next, in order:** rescore the first study; test new tables and the maximum and ranking tasks with thinking on, since
-all of Run A is one table; finish the 40-answer hand check.
+**Next, in order, about 980 calls:**
+
+| Command | Calls | Question |
+|---|---:|---|
+| `run models.json --tasks corr_new --reps 20` (4 configurations, not `Ultra t0.2`) | 240 | Does thinking on hold beyond one table? |
+| `run models.json --tasks max_p90,ranking --reps 20` (2 thinking configurations) | 200 | Does it fix maximum selection and ranking? Includes the row-order arm of Run B |
+| `run models.json --tasks mixed --reps 20` (Lightning, Ultra, `Ultra t0.2`) | 540 | Template, checklist or temperature: what removes the omission? |
+
+`run` uses every entry in the file, so give each command a `models.json` with only the entries named. Each `run` uses
+the same `runs.sqlite`; use `--seed` or move it aside as described below.
+
+Then finish the 40-answer hand check, ideally with a second rater.
 
 ## What the replication settles
 
@@ -57,8 +75,7 @@ Sahil's caveats apply as written. Row position and alias changed together across
    per run), `names_shuffled`, `labels_shuffled` (random row order, logged in `row_order`). `labels` vs `names` tests
    the alias with row order held fixed. `*_shuffled` vs fixed tests row order.
 4. **The checklist's own effect was never tested.** `mixed` now crosses the three original framings with `+checklist`.
-   `positive` vs `positive+checklist` asks whether the checklist is what removed the omission. The rows without a
-   checklist are the exact replication of the first study.
+   `positive` vs `positive+checklist` asks whether the checklist is what removed the omission. The `+freeform` rows, added later, are the replication of the first study's prompts.
 5. **Provider failures shrank Kimi's sample.** Calls are retried twice (10 s, then 20 s). The report shows
    `failed (retried)`, so a retried success is still visible.
 6. **Results were raw counts.** Every cell now has a Wilson 95% interval.
@@ -67,6 +84,8 @@ Sahil's caveats apply as written. Row position and alias changed together across
 run → SQLite → report. **Nothing has been run against the real models.**
 
 ## Runs, in priority order
+
+*Run A is done; for what comes next, use the table under Status. `GLM` and `Kimi` can no longer run.*
 
 Run A matters most and is the cheapest. 20 reps per condition separate ≈95% from ≈55% at p < 0.05.
 
@@ -90,13 +109,12 @@ the answer say r is a five-point unweighted summary that shows neither causality
 Before reading any results, agree on two things: the scored endpoint for each run is the `correct` column (for C, the
 `mentions climate CVI negative` column), and any comparison not in the Fisher line is exploratory.
 
-## Still needed from the first runs
+## Answered by Sahil's audit (2026-11-01)
 
-- Exact model IDs, providers, temperature and run dates for all four models: the model table in
-  `preliminary_findings_revised.md` is still empty.
-- Which duration tables the first evidence packet contained.
-- Sahil's follow-up prompts and the audit ledger. These are needed to know whether his coverage checklist matches
-  `CHECKLIST` here; if it does not, use his text.
+- Model IDs, provider, temperature and dates are now in `preliminary_findings_revised.md`.
+- The first packet's duration evidence was the six county-year OLS models.
+- His coverage prompt is not `CHECKLIST`: it asks for each finding's model, direction and p-value, then an overall
+  assessment. `+checklist` here is a new comparison, not a replication of his follow-up.
 
 ## Implication for the LAICS chatbot
 

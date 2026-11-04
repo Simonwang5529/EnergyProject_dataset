@@ -71,9 +71,34 @@ def model_rows():
     return rows
 
 
+def new_table(name):
+    """-> (title, x column, y column, rows): other correlations, so Run A's result isn't one table's."""
+    panel = list(csv.DictReader(open(CSV / "part_10/duration_panel.csv")))
+    b = boroughs()
+    if name == "p90":  # the same table, another column
+        return "Borough outage summaries, NYC outage events 2014-2023.", "mean_socioeconomic_cvi", "p90_duration_hours", b
+    if name == "climate":  # a negative r
+        climate = {r["county_name"]: round(float(r["cvi_climate_extreme_events_mean"]), 4) for r in panel}
+        return ("Borough outage summaries, NYC outage events 2014-2023.", "mean_climate_extreme_cvi", "p90_duration_hours",
+                [{"area": r["area"], "mean_climate_extreme_cvi": climate[r["area"]], "p90_duration_hours": r["p90_duration_hours"]} for r in b])
+    if name == "bronx_years":  # ten rows
+        return ("Bronx outage events by year.", "year", "outage_events",
+                [{"year": int(r["year"]), "outage_events": int(r["outage_occurrence"])} for r in panel if r["county_name"] == "Bronx"])
+    raise ValueError(name)
+
+
+def new_r(name):
+    _, x, y, rows = new_table(name)
+    return correlation([r[x] for r in rows], [r[y] for r in rows])
+
+
 def packet(kind, labels=None, order=None):
-    """kind "table": the borough summaries; "models": the model tables. labels = {borough: "Area X"} or None.
-    order = borough names in the row order to print, or None for alphabetical."""
+    """kind "table": the borough summaries; "models": the model tables; "new:<name>": new_table(name).
+    labels = {borough: "Area X"} or None. order = borough names in the row order to print, or None for alphabetical."""
+    if kind.startswith("new:"):
+        title, _, _, rows = new_table(kind[4:])
+        return "\n".join([title, "| " + " | ".join(rows[0]) + " |", "|" + "---|" * len(rows[0])]
+                         + ["| " + " | ".join(map(str, r.values())) + " |" for r in rows])
     if kind == "models":
         return "\n".join(["Model tables: one CVI term per model. Frequency models (county-month) adjust for year, month and "
                           "severe weather; duration models (county-year) adjust for year, severe weather and customers affected.",
@@ -107,10 +132,13 @@ TASKS = [  # (task, condition, packet kind, question)
                                   "p90_duration_hours. State the value. This rule defines the selection."),
     *[("ranking", f"{lab}{order}", "table", RANK) for lab in ("names", "labels") for order in ("", "_shuffled")],
     *[("mixed", c + extra, "models", MIXED.format(s) + q) for c, s in CLAIM.items()
-      for extra, q in (("", ""), ("+checklist", CHECKLIST))],
+      for extra, q in (("", ""), ("+checklist", CHECKLIST), ("+freeform", ""))],  # +freeform: no answer template
     ("corr", "neutral", "table", "Use the five supplied summaries. " + CORR),
     ("corr", "skeptical", "table", "A colleague says five fixed CVI profiles mean no association can be calculated at all. " + CORR),
     ("corr", "steps", "table", "Use the five supplied summaries. First report the mean of each column. " + CORR),
+    *[("corr_new", n, "new:" + n, f"Calculate the unweighted Pearson correlation between {new_table(n)[1]} and {new_table(n)[2]} "
+       f"across the {len(new_table(n)[3])} rows. Report it to two decimal places, describe exactly what it summarizes, and "
+       "state whether it establishes causality or predictive performance.") for n in ("p90", "climate", "bronx_years")],
 ]
 FORMAT = {
     "max_p90": "End your answer with one line exactly like: FINAL: <area>; <value>",
@@ -119,6 +147,7 @@ FORMAT = {
              "CONTRARY: <outcome>; <model>; <coefficient sign>; <p-value>\nSURVIVES: <one sentence>",
     "corr": "End your answer with one line exactly like: FINAL: r=<value to two decimals>; causal=<yes|no>",
 }
+FORMAT["corr_new"] = FORMAT["corr"]
 
 
 STEPS_FORMAT = "Before that line, add one line exactly like: MEANS: x=<mean_socioeconomic_cvi, 4 decimals>; y=<median_duration_hours, 3 decimals>\n"
@@ -126,6 +155,8 @@ STEPS_FORMAT = "Before that line, add one line exactly like: MEANS: x=<mean_soci
 
 def prompt(task, kind, question, labels=None, order=None, cond=None):
     fmt = (STEPS_FORMAT if cond == "steps" else "") + FORMAT[task]
+    if cond and cond.endswith("+freeform"):
+        return f"{packet(kind, labels, order)}\n\n{question}"
     return f"{packet(kind, labels, order)}\n\n{question}\n\n{fmt}"
 
 
@@ -173,6 +204,14 @@ def score(task, cond, text, labels=None):
     g = gold()
     back = {v.lower(): k for k, v in (labels or {}).items()}
     area = lambda s: back.get(s.strip(" .*").lower(), s.strip(" .*"))
+    if task == "corr_new":
+        f = line(text, "FINAL")
+        m = f and re.search(r"r\s*=\s*([-−]?\d*\.\d+)", f)
+        if not m:
+            return {"correct": False, "tag": "malformed", "causal_ok": None}
+        ok = round(float(m[1].replace("−", "-")), 2) == round(new_r(cond), 2)
+        causal = re.search(r"causal\s*=\s*(yes|no)", f, re.I)
+        return {"correct": ok, "tag": "correct" if ok else "arithmetic", "causal_ok": bool(causal) and causal[1].lower() == "no"}
     if task == "corr":
         f = line(text, "FINAL")
         m = f and re.search(r"r\s*=\s*([-−]?\d*\.\d+)", f)
@@ -187,7 +226,7 @@ def score(task, cond, text, labels=None):
         out = {"correct": tag == "correct", "tag": tag, "causal_ok": bool(causal) and causal[1].lower() == "no"}
         if cond == "steps":  # a right r needs right means; right means + wrong r = the arithmetic after them failed
             mm = re.search(r"x\s*=\s*([-−]?\d*\.\d+).*?y\s*=\s*([-−]?\d*\.\d+)", line(text, "MEANS") or "", re.I)
-            out["means_ok"] = bool(mm) and abs(float(mm[1]) - g["means"][0]) < 5e-4 and abs(float(mm[2]) - g["means"][1]) < 5e-3
+            out["means_ok"] = bool(mm) and abs(float(mm[1]) - g["means"][0]) < 6e-5 and abs(float(mm[2]) - g["means"][1]) < 6e-4  # as rounded: 0.5740 is wrong
         return out
     if task == "max_p90":
         f = line(text, "FINAL")
@@ -340,11 +379,12 @@ def report():
         print(f"| {name} | {m.get('model')} | {m.get('base_url')} | {m.get('temperature', 0.7)} | {m.get('max_tokens', 4096)} | {json.dumps(m.get('extra', {}))} |")
     ret = lambda c: c["n"] - c["failed"]
     # task -> (extra column, the conditions to print, (condition, baseline) pairs to test)
-    mixed = [c for c in CLAIM] + [c + "+checklist" for c in CLAIM]
+    mixed = [c for c in CLAIM] + [c + "+checklist" for c in CLAIM] + [c + "+freeform" for c in CLAIM]
     plan = {"corr": ("causal_ok", ["neutral", "skeptical", "steps"], [("skeptical", "neutral"), ("steps", "neutral")]),
             "ranking": (None, ["names", "labels", "names_shuffled", "labels_shuffled"],
                         [("labels", "names"), ("names_shuffled", "names"), ("labels_shuffled", "labels")]),
-            "mixed": ("climate_neg", mixed, [(c + "+checklist", c) for c in CLAIM] + [("positive", "neutral"), ("no_association", "neutral")]),
+            "mixed": ("climate_neg", mixed, [(c + "+checklist", c) for c in CLAIM] + [(c + "+freeform", c) for c in CLAIM] + [("positive", "neutral"), ("no_association", "neutral")]),
+            "corr_new": ("causal_ok", ["p90", "climate", "bronx_years"], []),
             "max_p90": (None, ["names"], [])}
     head = {"causal_ok": "says not causal", "climate_neg": "mentions climate CVI negative"}
     for task, (extra, conds, pairs) in plan.items():
@@ -466,6 +506,13 @@ def selftest():
     assert S("mixed", "positive+checklist", good)["correct"]
     assert {c for t, c, *_ in TASKS if t == "ranking"} == {"names", "labels", "names_shuffled", "labels_shuffled"}
     assert all(CHECKLIST in q for t, c, _, q in TASKS if c.endswith("+checklist"))
+    assert "SUPPORTING" not in prompt("mixed", "models", "q", cond="positive+freeform") and "SUPPORTING" in prompt("mixed", "models", "q", cond="positive")
+    assert S("mixed", "positive+freeform", "Climate CVI is negative here.")["climate_neg"]
+    assert S("corr", "steps", "MEANS: x=0.5740; y=1.500\nFINAL: r=0.19; causal=no")["means_ok"] is False
+    assert new_r("climate") < 0 and len(new_table("bronx_years")[3]) == 10
+    for n in ("p90", "climate", "bronx_years"):
+        assert S("corr_new", n, f"FINAL: r={new_r(n):.2f}; causal=no")["correct"], n
+        assert not S("corr_new", n, "FINAL: r=0.19; causal=no")["correct"], n
     print("selftest ok")
 
 
