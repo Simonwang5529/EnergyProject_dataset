@@ -4,7 +4,7 @@ Columbia University Data Science Institute — NYC CVI + Outage Integration Proj
 
 **Research question:** Does community vulnerability (CVI) predict worse outage frequency and duration across NYC counties (2014–2023)?
 
-**Main finding:** The resilience channel (duration) is a stronger and more consistent vulnerability signal than the frequency channel. Higher social-economic CVI counties experience longer outages — especially in the upper tail (p90, share >24h) — across OLS, GEE, and Ridge specifications.
+**Main finding:** Severe weather is the clearest and most consistent association in the fitted outage analyses. Evidence for social-economic vulnerability varies by outcome, aggregation level and model. In the county-month frequency models it is positive, but the county-month models have 600 rows but only five distinct CVI values, and neither their HC3 OLS nor their Poisson standard errors are clustered by county, so their very small p-values overstate the evidence: clustered by county, social-economic CVI has p = 0.23 (OLS) and 0.39 (Poisson), while severe weather stays at p ≤ 0.002 (`scripts/part9_clustered_check.py`; rough with five clusters). County-year duration models do not establish a consistent association, and county-clustered event-level OLS is imprecise. Event-level Ridge gives a positive coefficient with an individual-event bootstrap interval just above zero (coef 0.043, CI about 0.001 to 0.081), but this sensitivity result does not establish a general or causal duration effect. Treat vulnerability as a plausible, policy-relevant signal across five counties, not a proven effect. See `docs/EDA_Outage_Report.md`.
 
 ## Notebooks
 
