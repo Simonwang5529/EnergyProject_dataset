@@ -86,7 +86,7 @@ The methods answer different questions, so the coefficients should not all be in
 - Logistic models estimate binary severe-outage probability, not outage count or duration.
 - Ridge coefficients are mainly used to see whether signs remain stable when predictors are correlated.
 
-For nontechnical readers, the safest language is comparative and directional. For example, say that higher social-economic vulnerability is associated with higher monthly outage counts in the clean county-month model, not that vulnerability alone causes outages. For duration, say that severe weather is the clearest predictor, while the CVI duration signal is most visible in the event-level Ridge model.
+For nontechnical readers, the safest language is comparative and directional. For example, say that higher social-economic vulnerability is associated with higher monthly outage counts in the clean county-month model, not that vulnerability alone causes outages. For duration, say that severe weather is the clearest association, while the CVI duration signal depends on the model and is not established.
 
 The report should also be clear about what not to overclaim. Tract-level patterns are valuable for maps and screening, but they are not the final inferential level. Climate-extreme-events CVI has an unexpected negative sign in Part 9, so it should be treated as a modeling caution rather than a policy headline. Infrastructure CVI is positive in the theory-driven frequency model but imprecise, so it is suggestive rather than definitive.
 
@@ -96,7 +96,7 @@ The report should also be clear about what not to overclaim. Tract-level pattern
 
 1. Severe weather is the strongest and most stable predictor. In event-level models, severe weather is strongly associated with log duration (`coef = 0.446`, `p < 0.001`) and log customer-hours (`coef = 1.506`, `p < 0.001`).
 
-2. The best frequency model uses county-month data. Part 9 now uses `600` county-month observations. In the clean one-CVI-at-a-time models, social-economic CVI is the strongest positive CVI signal. In Poisson, `z_cvi_baseline_social_econ_mean = 0.186`, with `IRR = 1.204`, meaning a one-standard-deviation increase is associated with about a `20%` higher monthly outage count.
+2. The best frequency model uses county-month data. Part 9 now uses `600` county-month observations. In the clean one-CVI-at-a-time models, social-economic CVI is the strongest positive CVI signal. In Poisson, `z_cvi_baseline_social_econ_mean = 0.186`, with `IRR = 1.204`, meaning a one-standard-deviation increase is associated with about a `20%` higher monthly outage count. This is a descriptive estimate: the county-month models have 600 rows but only five distinct CVI values, and neither their HC3 OLS nor their Poisson standard errors are clustered by county, so their very small p-values overstate the evidence.
 
 3. Overall CVI is also positive in Part 9. In the county-month Poisson model, `z_cvi_overall_mean = 0.133`, with `IRR = 1.142`. This supports the broader vulnerability story, although social-economic CVI is clearer.
 
@@ -104,7 +104,7 @@ The report should also be clear about what not to overclaim. Tract-level pattern
 
 5. Duration evidence is more mixed at the county-year level. In Part 10, severe weather predicts median duration, p90 duration, and the share of outages longer than 8 hours, but CVI terms are not consistently significant.
 
-6. The strongest CVI duration evidence comes from event-level Ridge. Social-economic CVI is positive for log duration and its interval excludes zero (`coef = 0.043`, CI about `0.001` to `0.081`). Event-level clustered OLS is positive too, but its interval crosses zero.
+6. Event-level duration evidence is a sensitivity result. In event-level Ridge, social-economic CVI is positive for log duration with an interval just above zero (`coef = 0.043`, CI about `0.001` to `0.081`), but that bootstrap resamples individual events, not the five counties. County-clustered event-level OLS is also positive, but its interval crosses zero (`p = 0.73`), so Ridge is not independent confirmation.
 
 7. Infrastructure CVI is suggestive but imprecise. In Part 9b, the infrastructure coefficient is positive in both OLS and Ridge, but confidence intervals cross zero.
 
@@ -112,12 +112,12 @@ The report should also be clear about what not to overclaim. Tract-level pattern
 
 9. Severe weather is reliable across model types. It is positive in the frequency models, duration models, and customer-hours models. This is the least ambiguous result in the report.
 
-10. The interpretation of vulnerability should be careful. Social-economic CVI is the clearest CVI signal, especially in the county-month frequency model and event-level Ridge duration model. But because some models are imprecise, the report should describe vulnerability as plausible and policy-relevant, not universally proven across every outcome.
+10. The interpretation of vulnerability should be careful. Evidence for social-economic CVI varies by outcome, aggregation level and model, and all of it rests on five counties. The report should describe vulnerability as plausible and policy-relevant, not as proven.
 
 ## Final Conclusion
 
-The careful story is not that every CVI measure strongly predicts every outage outcome. The strongest result is that severe weather is robustly related to outage burden and duration. Vulnerability remains policy-relevant, especially social-economic vulnerability, but it is model-sensitive. The most defensible interpretation is that vulnerability may matter more through the resilience channel: once outages occur, higher-vulnerability places may remain without power longer.
+The careful story is not that every CVI measure strongly predicts every outage outcome. The strongest result is that severe weather is robustly related to outage burden and duration. Vulnerability remains policy-relevant, especially social-economic vulnerability, but it is model-sensitive. Vulnerability may matter, including through the resilience channel (once outages occur, higher-vulnerability places may remain without power longer), but five counties cannot establish it.
 
-For presentation, the recommended final hierarchy is: use Negative Binomial for outage counts, county-month Part 9 models for the clean CVI frequency story, event-level models for duration and customer-hours, and Ridge only as a sensitivity check. The final result should emphasize severe weather first, then social-economic vulnerability as the most credible CVI pattern, and then the caution that some CVI effects vary by outcome and model.
+For presentation, the recommended final hierarchy is: use Negative Binomial for outage counts, county-month Part 9 models for the clean CVI frequency story, event-level models for duration and customer-hours, and Ridge only as a sensitivity check. The final result should emphasize severe weather first, then social-economic vulnerability as a pattern worth further study, and then the caution that CVI effects vary by outcome and model and rest on five counties.
 
-Plain-language takeaway: the outage data show a clear weather story and a more cautious vulnerability story. Severe weather is consistently linked with more serious outage outcomes. Social-economic vulnerability is also important, especially in the updated 600-row county-month frequency model and in the event-level Ridge duration model. However, not every CVI measure behaves the same way, and some estimates remain imprecise. The report should therefore frame CVI as an equity and resilience signal that deserves attention, while being transparent that the strongest statistical evidence is for severe weather and for social-economic vulnerability rather than for every vulnerability dimension.
+Plain-language takeaway: the outage data show a clear weather story and a more cautious vulnerability story. Severe weather is consistently linked with more serious outage outcomes. Social-economic vulnerability is positive in the 600-row county-month frequency model and in event-level duration models, but those rows share five county values, so the small p-values overstate the evidence. Not every CVI measure behaves the same way. The report should therefore frame CVI as an equity and resilience signal that deserves attention, while being transparent that the strong statistical evidence is for severe weather.
