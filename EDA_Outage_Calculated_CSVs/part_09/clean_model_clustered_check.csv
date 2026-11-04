@@ -1,0 +1,9 @@
+family,label,cvi_term,cvi_coef,reported_p,clustered_se,clustered_p,ci_low,ci_high,weather_coef,weather_clustered_p
+OLS,Overall CVI,z_cvi_overall_mean,0.2753,4.753881321260345e-12,0.2191,0.277,-0.333,0.883,0.1781,0.002
+Poisson,Overall CVI,z_cvi_overall_mean,0.1329,1.9712226401578077e-19,0.2354,0.603,-0.521,0.786,0.1169,0.001
+OLS,Social-economic CVI,z_cvi_baseline_social_econ_mean,0.3011,3.3891939679179325e-14,0.214,0.232,-0.293,0.895,0.1711,0.0
+Poisson,Social-economic CVI,z_cvi_baseline_social_econ_mean,0.1857,5.746464505876081e-40,0.1914,0.387,-0.345,0.717,0.1132,0.0
+OLS,Climate-extreme CVI,z_cvi_climate_extreme_events_mean,-0.3154,1.7853629123024355e-15,0.1747,0.145,-0.8,0.17,0.1666,0.001
+Poisson,Climate-extreme CVI,z_cvi_climate_extreme_events_mean,-0.4315,5.821051848157492e-102,0.2696,0.185,-1.18,0.317,0.1022,0.0
+OLS,High-vulnerability share,z_high_cvi_share,0.078,0.05436815994914541,0.2116,0.731,-0.509,0.665,0.19,0.001
+Poisson,High-vulnerability share,z_high_cvi_share,-0.0439,0.003976079517306102,0.203,0.839,-0.607,0.52,0.1167,0.001

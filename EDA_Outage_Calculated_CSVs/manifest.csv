@@ -47,6 +47,7 @@ part_08,county_poisson_coef.csv
 part_09,clean_model_summary.csv
 part_09,clean_model_compact.csv
 part_09,clean_model_plot_data.csv
+part_09,clean_model_clustered_check.csv
 part_10,event_level.csv
 part_10,duration_panel.csv
 part_10,duration_year.csv
