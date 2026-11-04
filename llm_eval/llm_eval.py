@@ -153,7 +153,8 @@ POS = re.compile(r"pos|plus|\+\s*\d|>\s*0", re.I)
 
 
 def sign(field):
-    return "-" if NEG.search(field) else "+" if POS.search(field) else "?"
+    bare = field.strip(" ()*_`")  # the sign field is often just "-" or "+"
+    return {"-": "-", "−": "-", "+": "+"}.get(bare) or ("-" if NEG.search(field) else "+" if POS.search(field) else "?")
 
 
 def parse_result(s):
@@ -164,7 +165,7 @@ def parse_result(s):
 
 
 def mentions_climate_neg(text):  # the preliminary study's coverage measure, kept for comparison
-    return bool(re.search(r"climat[^\n]{0,160}?(negative|neg\b|[-−]0\.\d|irr\s*=?\s*0\.6)", text or "", re.I))
+    return bool(re.search(r"climat[^\n]{0,160}?(negative|neg\b|[-−]0\.\d|irr\s*=?\s*0\.6|;\s*\(?[-−]\)?\s*;|lower|fewer|decreas|inverse)", text or "", re.I))
 
 
 def score(task, cond, text, labels=None):
@@ -446,6 +447,12 @@ def selftest():
     null = ("SUPPORTING: log_duration_median (county-year); OLS: Median duration + climate CVI; +; 0.96\n"
             "CONTRARY: outage_occurrence; Poisson: Climate-extreme CVI only; −0.431; 5.8e-102\nSURVIVES: depends on outcome.")
     assert S("mixed", "no_association", null)["correct"]
+    bare = good.replace("positive", "+").replace("negative", "-")  # Sahil's rescoring found answers written this way
+    assert S("mixed", "positive", bare)["correct"] and S("mixed", "positive", bare)["climate_neg"]
+    assert mentions_climate_neg("CONTRARY: outage_occurrence; Poisson: Climate-extreme CVI only; -; 5.8e-102")
+    assert mentions_climate_neg("climate-extreme vulnerability is associated with lower frequency")
+    assert not mentions_climate_neg("Climate-extreme CVI only; +; 5.8e-102")
+    assert sign("−") == "-" and sign(" (-) ") == "-" and sign("+") == "+" and sign("Climate-extreme") == "?"
     assert not S("mixed", "neutral", "Only the social-economic result matters.")["correct"]
     assert round(fisher(10, 10, 7, 10), 3) == 0.211 and round(fisher(10, 10, 5, 10), 3) == 0.033
     assert wilson(14, 15) == "70-99%" and wilson(0, 20) == "0-16%"
